@@ -5,14 +5,19 @@ declare(strict_types=1);
 namespace MnToolkit;
 
 use Aws\Sqs\SqsClient;
+use MnMonolog\Handler\PapertrailHandler;
 
 class SendTransactionalEmail
 {
     /**
      * Send Transactional Email 
      *
-     * @param request $request
-     *
+     * @param $message_type
+     * @param $to_address
+     * @param $subject
+     * @param $fallback_text
+     * @param $template_fields
+     * @param $cc_addresses
      */
     public function sendTransactionalEmail($message_type, $to_address, $subject, $fallback_text, $template_fields=[], $cc_addresses)
     {
