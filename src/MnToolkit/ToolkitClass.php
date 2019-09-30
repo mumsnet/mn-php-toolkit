@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace MnToolkit;
 
+use Aws\Sqs\SqsClient;
+
 class ToolkitClass
 {
     /**
@@ -35,7 +37,7 @@ class ToolkitClass
      */
     public function setOriginRequestId(request $request): void
     {
-        
+
     }
 
     /**
@@ -78,17 +80,6 @@ class ToolkitClass
      *
      */
     public function deleteUserSession(array $cookies): boolean
-    {
-        
-    }
-
-    /**
-     * Send Transactional Email 
-     *
-     * @param request $request
-     *
-     */
-    public function sendTransactionalEmail($body,$subject,$email)
     {
         
     }
