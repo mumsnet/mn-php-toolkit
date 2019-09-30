@@ -14,7 +14,6 @@ class ToolkitClass
       
     }
     
-
     /**
      * Friendly welcome
      *
