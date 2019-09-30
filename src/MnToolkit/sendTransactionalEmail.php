@@ -6,7 +6,7 @@ namespace MnToolkit;
 
 use Aws\Sqs\SqsClient;
 
-class sendTransactionalEmail
+class SendTransactionalEmail
 {
     /**
      * Send Transactional Email 
