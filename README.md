@@ -1,2 +1,2 @@
-# mn-php-toolkit
+# mn-toolkit
 Mumsnet PHP Toolkit
