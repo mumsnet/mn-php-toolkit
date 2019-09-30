@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace mumsnet\toolkit;
+namespace mumsnet\mn-toolkit;
 
 class ExampleTest extends \PHPUnit\Framework\TestCase
 {

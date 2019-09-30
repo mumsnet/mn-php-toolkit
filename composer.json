@@ -1,12 +1,12 @@
 {
-    "name": "mumsnet/toolkit",
+    "name": "mumsnet/mn-toolkit",
     "type": "library",
     "description": "This package contains various functionalities used across all our projects. Those functionalities have been replicated from legacy ruby gems.",
     "keywords": [
         "mumsnet",
-        "toolkit"
+        "mn-toolkit"
     ],
-    "homepage": "https://github.com/mumsnet/toolkit",
+    "homepage": "https://github.com/mumsnet/mn-toolkit",
     "license": "MIT",
     "authors": [
         {
@@ -25,12 +25,12 @@
     },
     "autoload": {
         "psr-4": {
-            "mumsnet\\toolkit\\": "src"
+            "mumsnet\\mn-toolkit\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "mumsnet\\toolkit\\": "tests"
+            "mumsnet\\mn-toolkit\\": "tests"
         }
     },
     "scripts": {
