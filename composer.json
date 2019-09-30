@@ -25,7 +25,7 @@
     },
     "autoload": {
         "psr-4": {
-            "mumsnet\\mn-toolkit\\": "src"
+        "MnToolkit\\": "src/"
         }
     },
     "autoload-dev": {
