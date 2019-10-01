@@ -19,8 +19,9 @@ class SendTransactionalEmail
      * @param $template_fields
      * @param $cc_addresses
      */
-    public function sendTransactionalEmail($message_type, $to_address, $subject, $fallback_text, $template_fields=[], $cc_addresses)
+    public function sendTransactionalEmail($message_type, $to_address, $subject, $fallback_text, $template_fields=[], $cc_addresses = '' , $request_id)
     {
+            //@TODO add monologue-papertrail functionality
             //validations
             if(empty($message_type)){
                 throw new Exception('message_type cannot be blank');
@@ -48,7 +49,9 @@ class SendTransactionalEmail
                 'subject' => $subject,
                 'fallback_text' => $fallback_text
             ]
+
             //Get request id if exists
+            $message_body['request_id'] = $request_id;
 
             //Put it on the SQS Queue
             if(env('SQS_MAIL2_QUEUE_URL')){

@@ -30,28 +30,6 @@ class ToolkitClass
     }
 
     /**
-     * Get Origin request Id and log it - set it as request Id for every request
-     *
-     * @param request $request
-     *
-     */
-    public function setOriginRequestId(request $request): void
-    {
-
-    }
-
-    /**
-     * Get Origin request Id and log it - set it as request Id for every request
-     *
-     * @param request $request
-     *
-     */
-    public function sourceIpLogger(request $request): void
-    {
-        
-    }
-
-    /**
      * Get User Session from Redis
      *
      * @param request $request
