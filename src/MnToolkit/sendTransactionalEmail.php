@@ -51,7 +51,7 @@ class SendTransactionalEmail
                 throw new Exception('to_address: $to_address is not a valid email address');
             }
             
-            
+
             //Set up Message body
             $message_body = [
                 'message_schema_version' => '1',
@@ -61,7 +61,7 @@ class SendTransactionalEmail
                 'cc_addresses' => $cc_addresses,
                 'subject' => $subject,
                 'fallback_text' => $fallback_text
-            ]
+            ];
 
             //Get request id if exists
             $message_body['request_id'] = $request_id;
