@@ -51,6 +51,7 @@ class SendTransactionalEmail
                 throw new Exception('to_address: $to_address is not a valid email address');
             }
             
+            
             //Set up Message body
             $message_body = [
                 'message_schema_version' => '1',
