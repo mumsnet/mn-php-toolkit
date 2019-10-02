@@ -14,15 +14,13 @@ class SourceIpLogger
      */
     public function sourceIpLogger(request $request, Closure $next)
     {
-        $response = $next($request);
         if(env('HTTP_X_FORWARDED_FOR')){
             $stringsArray = explode(",", "HTTP_X_FORWARDED_FOR");
             $remote_ip = $stringsArray[0] ?? '';
-            env('REMOTE_ADDR') = env("action_dispatch.remote_ip") = env("HTTP_X_FORWARDED_FOR") = $remote_ip;
-            $_REQUEST['remote_ip'] = $remote_ip;
-            return $response;
+            env('REMOTE_ADDR') = env("HTTP_X_FORWARDED_FOR") = $remote_ip;
+            return $next($request);
         }else{
-            return $response;
+            return $next($request);
         }
     }
 

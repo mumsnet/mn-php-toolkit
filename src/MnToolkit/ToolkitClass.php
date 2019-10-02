@@ -37,7 +37,11 @@ class ToolkitClass
      */
     public function getUserSession(array $cookies): boolean
     {
-        
+        if(!env('MN_REDIS_URL')){
+            throw new Exception("ENV['MN_REDIS_URL'] is required");
+        }
+        //return RequestStore.store[:sso] if RequestStore.store[:sso]
+
     }
 
     /**

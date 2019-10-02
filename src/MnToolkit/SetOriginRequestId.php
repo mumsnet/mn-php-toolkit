@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace MnToolkit;
 
-use Aws\Sqs\SqsClient;
-use MnMonolog\Handler\PapertrailHandler;
-
 class SetOriginRequestId
 {
+    private $logger;
+    
+    public function __construct(PsrLogLoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
     /**
      * Get Origin request Id and log it - set it as request Id for every request
      *
@@ -19,16 +22,16 @@ class SetOriginRequestId
     {
         if(env('HTTP_X_REQUEST_ID')){
             $request_id = env('HTTP_X_REQUEST_ID');
-            //Log "Found HTTP_X_REQUEST_ID #{request_id}"
+            $this->logger->info("Found HTTP_X_REQUEST_ID: $request_id");
         }
         if(env('HTTP_X_AMZN_TRACE_ID')){
             preg_match('/^.*Root=([^;]*).*$/',env('HTTP_X_AMZN_TRACE_ID'),$matches);
             $request_id = env('HTTP_X_REQUEST_ID') = $matches[0];
-            //Log "Found HTTP_X_AMZN_TRACE_ID #{request_id}"
+            $this->logger->info("Found HTTP_X_AMZN_TRACE_ID: $request_id");
         }
         if(!$request_id){
             $request_id = env('HTTP_X_REQUEST_ID') = uniqid();
-            //Log ""Set request_id #{request_id}""
+            $this->logger->info("Set request_id: $request_id");
         }
 
         $response = $next($request);

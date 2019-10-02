@@ -5,10 +5,15 @@ declare(strict_types=1);
 namespace MnToolkit;
 
 use Aws\Sqs\SqsClient;
-use MnMonolog\Handler\PapertrailHandler;
 
 class SendTransactionalEmail
 {
+    private $logger;
+    
+    public function __construct(PsrLogLoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
     /**
      * Send Transactional Email 
      *
@@ -18,10 +23,17 @@ class SendTransactionalEmail
      * @param $fallback_text
      * @param $template_fields
      * @param $cc_addresses
+     * @param $request_id
      */
-    public function sendTransactionalEmail($message_type, $to_address, $subject, $fallback_text, $template_fields=[], $cc_addresses = '' , $request_id)
-    {
-            //@TODO add monologue-papertrail functionality
+    public function sendTransactionalEmail(
+        $message_type, 
+        $to_address, 
+        $subject, 
+        $fallback_text, 
+        $template_fields=[], 
+        $cc_addresses = '' , 
+        $request_id
+    ){
             //validations
             if(empty($message_type)){
                 throw new Exception('message_type cannot be blank');
@@ -36,7 +48,7 @@ class SendTransactionalEmail
                 throw new Exception('fallback_text cannot be blank');
             }
             if(filter_var($to_address, FILTER_VALIDATE_EMAIL) == false){
-                throw new Exception('to_address: '.$to_address.' is not a valid email address');
+                throw new Exception('to_address: $to_address is not a valid email address');
             }
             
             //Set up Message body
@@ -70,7 +82,7 @@ class SendTransactionalEmail
 
             }else{
 
-               error_log('Payload for SQS: '. $message_body);
+                $this->logger->info("Payload for SQS: ". $message_body);
 
             }
 
