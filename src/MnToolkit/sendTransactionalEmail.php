@@ -10,7 +10,7 @@ class SendTransactionalEmail
 {
     private $logger;
     
-    public function __construct(PsrLogLoggerInterface $logger)
+    public function __construct(Monolog\Logger $logger)
     {
         $this->logger = $logger;
     }
