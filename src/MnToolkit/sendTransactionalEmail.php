@@ -60,11 +60,9 @@ class SendTransactionalEmail
                 'to_address' => $to_address,
                 'cc_addresses' => $cc_addresses,
                 'subject' => $subject,
-                'fallback_text' => $fallback_text
+                'fallback_text' => $fallback_text,
+                'request_id' => $request_id
             ];
-
-            //Get request id if exists
-            $message_body['request_id'] = $request_id;
 
             //Put it on the SQS Queue
             if(env('SQS_MAIL2_QUEUE_URL')){
