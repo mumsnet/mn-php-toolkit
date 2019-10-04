@@ -53,7 +53,7 @@ class UserSessionsLaravel
      * @param request $request
      *
      */
-    public function setUserSession(array $cookies, $user_id, $persistent, $other_attributes = {})
+    public function setUserSession(array $cookies, $user_id, $persistent, $other_attributes = [])
     {
         $expiry = $persistent ? strtotime("+1 year") : strtotime("+1 day");
 
