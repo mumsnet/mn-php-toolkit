@@ -26,7 +26,7 @@ class UserSessionsLaravel
     public function getUserIdFromSession(array $cookies)
     {
         if(!empty($cookies)){
-            $user = $this->getUserSession(array $cookies);
+            $user = $this->getUserSession($cookies);
         }
 
         return $user['user_id'];
