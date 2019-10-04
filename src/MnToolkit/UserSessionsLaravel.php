@@ -11,9 +11,10 @@ class UserSessionsLaravel
     /**
      * Create a new Skeleton Instance
      */
-    public function __construct()
+    public function __construct($cookies)
     {
-      
+      $this->cookie_name = 'mmsso';
+      $this->cookie_value_prefix = 'mmsso_';
     }
 
     /**
@@ -28,7 +29,7 @@ class UserSessionsLaravel
             $user = $this->getUserSession(array $cookies);
         }
 
-        return json_encode($user['user_id']);
+        return $user['user_id'];
     }
 
     /**
@@ -40,10 +41,10 @@ class UserSessionsLaravel
     public function getUserSession(array $cookies)
     {
         if(!empty($cookies)){
-            $user = Redis::get($cookies['SSO_COOKIE_NAME']);
+            $user = Redis::get($cookies[$this->cookie_name]);
         }
 
-        return json_encode($user);
+        return $user;
     }
 
     /**
@@ -56,14 +57,14 @@ class UserSessionsLaravel
     {
         $expiry = $persistent ? strtotime("+1 year") : strtotime("+1 day");
 
-        $cookies['SSO_COOKIE_NAME'] = [
-            'values' => env('SSO_COOKIE_VALUE_PREFIX'). uniqid(),
+        $cookies[$this->cookie_name] = [
+            'values' => $this->cookie_value_prefix. uniqid(),
             'expires' => $expiry,
             'secure' => true,
             'httponly' => true
         ];
 
-        Redis::set($cookies['SSO_COOKIE_NAME'], $user_id, $expiry);
+        Redis::set($cookies[$this->cookie_name], $user_id, $expiry);
     }
 
     /**
@@ -75,7 +76,7 @@ class UserSessionsLaravel
     public function deleteUserSession(array $cookies)
     {
         if($cookies){
-            Redis::del($cookies['SSO_COOKIE_NAME']);
+            Redis::del($cookies[$this->cookie_name]);
         }
     }
 
