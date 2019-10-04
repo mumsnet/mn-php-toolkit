@@ -13,8 +13,9 @@ class UserSessionsLaravel
      */
     public function __construct($cookies)
     {
-      $this->cookie_name = 'mmsso';
-      $this->cookie_value_prefix = 'mmsso_';
+      $this->cookie_name = 'mnsso';
+      $this->cookie_value_prefix = 'mnsso_';
+      $this->cookies = $cookies;
     }
 
     /**
@@ -23,10 +24,10 @@ class UserSessionsLaravel
      * @param request $request
      *
      */
-    public function getUserIdFromSession(array $cookies)
+    public function getUserIdFromSession()
     {
-        if(!empty($cookies)){
-            $user = $this->getUserSession($cookies);
+        if(!empty($this->cookies)){
+            $user = $this->getUserSession($this->cookies);
         }
 
         return $user['user_id'];
@@ -38,10 +39,10 @@ class UserSessionsLaravel
      * @param request $request
      *
      */
-    public function getUserSession(array $cookies)
+    public function getUserSession()
     {
-        if(!empty($cookies)){
-            $user = Redis::get($cookies[$this->cookie_name]);
+        if(!empty($this->cookies)){
+            $user = Redis::get($this->cookies[$this->cookie_name]);
         }
 
         return $user;
@@ -53,11 +54,11 @@ class UserSessionsLaravel
      * @param request $request
      *
      */
-    public function setUserSession(array $cookies, $user_id, $persistent, $other_attributes = [])
+    public function setUserSession($user_id, $persistent, $other_attributes = [])
     {
         $expiry = $persistent ? strtotime("+1 year") : strtotime("+1 day");
 
-        $cookies[$this->cookie_name] = [
+        $this->cookies[$this->cookie_name] = [
             'values' => $this->cookie_value_prefix. uniqid(),
             'expires' => $expiry,
             'secure' => true,
@@ -65,7 +66,7 @@ class UserSessionsLaravel
         ];
 
 
-        Redis::set($cookies[$this->cookie_name], $user_id, $expiry);
+        Redis::set($this->cookies[$this->cookie_name], $user_id, $expiry);
     }
 
     /**
@@ -74,10 +75,10 @@ class UserSessionsLaravel
      * @param request $request
      *
      */
-    public function deleteUserSession(array $cookies)
+    public function deleteUserSession()
     {
-        if($cookies){
-            Redis::del($cookies[$this->cookie_name]);
+        if($this->cookies){
+            Redis::del($this->cookies[$this->cookie_name]);
         }
     }
 
