@@ -64,6 +64,7 @@ class UserSessionsLaravel
             'httponly' => true
         ];
 
+
         Redis::set($cookies[$this->cookie_name], $user_id, $expiry);
     }
 
