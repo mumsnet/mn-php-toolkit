@@ -16,6 +16,7 @@ class UserSessionsLaravel
       $this->cookie_name = 'mnsso';
       $this->cookie_value_prefix = 'mnsso_';
       $this->cookies = $cookies;
+
     }
 
     /**
@@ -42,6 +43,7 @@ class UserSessionsLaravel
     public function getUserSession()
     {
         if(!empty($this->cookies)){
+
             $user = Redis::get($this->cookies[$this->cookie_name]);
         }
 
