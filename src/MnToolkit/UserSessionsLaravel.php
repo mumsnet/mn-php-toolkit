@@ -31,7 +31,7 @@ class UserSessionsLaravel
             $user = $this->getUserSession($this->cookies);
         }
 
-        return $user['user_id'];
+        return $user->user_id;
     }
 
     /**
@@ -47,7 +47,7 @@ class UserSessionsLaravel
             $user = Redis::get($this->cookies[$this->cookie_name]);
         }
 
-        return $user;
+        return json_decode($user);
     }
 
     /**
