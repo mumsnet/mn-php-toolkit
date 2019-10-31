@@ -3,8 +3,10 @@
 
 namespace MnToolkit;
 
+use Lindelius\JWT\StandardJWT;
+use Monolog\Handler\ErrorLogHandler;
+use Monolog\Logger;
 use Psr\Log\LoggerInterface;
-use \Lindelius\JWT\StandardJWT;
 
 define("TOKEN_EXPIRY", (60 * 60)); // 1 hour
 
@@ -12,7 +14,6 @@ class JWT
 {
     private $jwtClientId = false;
     private $jwtSecretsJson = false;
-
     private $logger;
 
     /**
@@ -24,8 +25,8 @@ class JWT
     public function __construct(LoggerInterface $logger = null)
     {
         if (is_null($logger)) {
-            $logger = new \Monolog\Logger("log");
-            $logger->pushHandler(new \Monolog\Handler\ErrorLogHandler());
+            $logger = new Logger(get_class($this));
+            $logger->pushHandler(new ErrorLogHandler());
         }
         $this->logger = $logger;
         $this->checkEnvironmentVariables();
@@ -50,7 +51,7 @@ class JWT
     }
 
     /**
-     * Checks if a given JWT token is valid.  Returns TRUE if valid, FALSE if not.
+     * Checks if a given JWT token is valid.  Returns true if valid, false if not.
      *
      * @param  string  $encodedToken
      * @return bool
@@ -72,6 +73,7 @@ class JWT
         try {
             return $this->_decodeToken($encodedToken);
         } catch (Exception $e) {
+            $this->logger->error($e);
             return false;
         }
     }
