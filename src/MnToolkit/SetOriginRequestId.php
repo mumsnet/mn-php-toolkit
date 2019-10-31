@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace MnToolkit;
 
 use Closure;
+use Psr\Log\LoggerInterface;
 
 class SetOriginRequestId
 {
     private $logger;
 
-    public function __construct(PsrLogLoggerInterface $logger)
+    public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }

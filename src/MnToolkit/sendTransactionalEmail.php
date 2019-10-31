@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace MnToolkit;
 
 use Aws\Sqs\SqsClient;
+use Psr\Log\LoggerInterface;
 
 class SendTransactionalEmail
 {
     private $logger;
 
-    public function __construct($logger)
+    public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }
