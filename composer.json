@@ -17,7 +17,11 @@
         }
     ],
     "require": {
-        "php" : "~7.1"
+        "php": "~7.1",
+        "guzzlehttp/guzzle": "6.4.1",
+        "lindelius/php-jwt": "0.8.1",
+        "phpfastcache/phpfastcache": "7.1.0",
+        "psr/log": "1.1.1"
     },
     "require-dev": {
         "phpunit/phpunit" : ">=7.0",

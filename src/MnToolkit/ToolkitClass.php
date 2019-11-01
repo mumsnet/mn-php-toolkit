@@ -11,13 +11,13 @@ class ToolkitClass
      */
     public function __construct()
     {
-      
+
     }
-    
+
     /**
      * Friendly welcome
      *
-     * @param string $phrase Phrase to return
+     * @param  string  $phrase  Phrase to return
      *
      * @return string Returns the phrase passed in
      */
