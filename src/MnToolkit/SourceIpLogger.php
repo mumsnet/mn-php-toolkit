@@ -19,6 +19,7 @@ class SourceIpLogger
         if (env('HTTP_X_FORWARDED_FOR')) {
             $stringsArray = explode(",", "HTTP_X_FORWARDED_FOR");
             $remote_ip = $stringsArray[0] ?? '';
+            //Not  sure if this is exactly  what we need
             putenv("REMOTE_ADDR=$remote_ip");
             putenv("HTTP_X_FORWARDED_FOR=$remote_ip");
             return $next($request);
