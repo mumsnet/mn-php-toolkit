@@ -8,9 +8,6 @@ use Illuminate\Support\Facades\Redis;
 
 class UserSessionsLaravel
 {
-    /**
-     * Create a new Skeleton Instance
-     */
     public function __construct($cookies)
     {
       $this->cookie_name = 'mnsso';
