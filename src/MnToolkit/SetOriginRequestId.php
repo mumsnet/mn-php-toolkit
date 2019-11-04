@@ -29,17 +29,17 @@ class SetOriginRequestId
      */
     public function setOriginRequestId($request, Closure $next)
     {
-        if (getenv('HTTP_X_REQUEST_ID')) {
-            $request_id = getenv('HTTP_X_REQUEST_ID');
-            $this->logger->info("Found HTTP_X_REQUEST_ID: $request_id");
-        } elseif (getenv('HTTP_X_AMZN_TRACE_ID')) {
-            preg_match('/^.*Root=([^;]*).*$/', getenv('HTTP_X_AMZN_TRACE_ID'), $matches);
+        if ($_SERVER['HTTP_X_REQUEST_ID']) {
+            $request_id = $_SERVER['HTTP_X_REQUEST_ID'];
+            $this->logger->error("Found HTTP_X_REQUEST_ID: $request_id");
+        } elseif ($_SERVER['HTTP_X_AMZN_TRACE_ID']) {
+            preg_match('/^.*Root=([^;]*).*$/', $_SERVER['HTTP_X_AMZN_TRACE_ID'], $matches);
             $request_id = $matches[0];
-            $this->logger->info("Found HTTP_X_AMZN_TRACE_ID: $request_id");
+            $this->logger->error("Found HTTP_X_AMZN_TRACE_ID: $request_id");
         }
         if (!$request_id) {
             $request_id = uniqid();
-            $this->logger->info("Set request_id: $request_id");
+            $this->logger->error("Set request_id: $request_id");
         }
 
         $response = $next($request);

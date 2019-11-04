@@ -11,12 +11,10 @@ class SourceIpLogger
     /**
      * Get Origin request Id and log it - set it as request Id for every request
      *
-     * @param $request
-     *
      */
     public function sourceIpLogger($request, Closure $next)
     {
-        if (getenv('HTTP_X_FORWARDED_FOR')) {
+        if ($_SERVER['HTTP_X_FORWARDED_FOR']) {
             $stringsArray = explode(",", "HTTP_X_FORWARDED_FOR");
             $remote_ip = $stringsArray[0] ?? '';
             putenv("REMOTE_ADDR=$remote_ip");

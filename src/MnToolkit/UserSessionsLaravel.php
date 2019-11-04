@@ -34,14 +34,14 @@ class UserSessionsLaravel
     public function getUserIdFromSession()
     {
         if (empty($this->cookies)) {
-            $this->logger->info("Cookie Array Was Empty");
+            $this->logger->error("Cookie Array Was Empty");
             throw new Exception('Cookie array is empty');
         }
 
         $user = $this->getUserSession();
 
         if (!$user) {
-            $this->logger->info("No user could be obtained from the session");
+            $this->logger->error("No user could be obtained from the session");
             throw new Exception('No user could be obtained from the session');
         }
 
@@ -57,13 +57,13 @@ class UserSessionsLaravel
     {
 
         if (empty($this->cookies)) {
-            $this->logger->info("Cookie Array Was Empty");
+            $this->logger->error("Cookie Array Was Empty");
             throw new Exception('Cookie array is empty');
         }
         $user = Redis::get($this->cookies[$this->cookie_name]);
 
         if (!$user) {
-            $this->logger->info("No user could be obtained from the session");
+            $this->logger->error("No user could be obtained from the session");
             throw new Exception('No user could be obtained from the session');
         }
 
@@ -100,12 +100,12 @@ class UserSessionsLaravel
     public function deleteUserSession()
     {
         if (empty($this->cookies)) {
-            $this->logger->info("Cookie Array Was Empty");
+            $this->logger->error("Cookie Array Was Empty");
             throw new Exception('Cookies array is empty');
         }
 
         //tell laravel to delete from user's browser - Queue adds the cookie to the next response
-        Cookie::queue(\Cookie::forget($this->cookie_name));
+        Cookie::queue(Cookie::forget($this->cookie_name));
 
         Redis::del($this->cookies[$this->cookie_name]);
 

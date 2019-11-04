@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace MnToolkit;
 
-require "predis/autoload.php";
 use Exception;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
-// TODO Add the predis package instead
+use Predis\Predis;
 
 class UserSessionsLambda
 {
@@ -26,9 +25,7 @@ class UserSessionsLambda
 
       $this->logger = $logger;
 
-      PredisAutoloader::register();
-
-      $this->redis = new PredisClient(array(
+      $this->redis = new Predis\Client(array(
             "scheme" => "tcp",
             "host" => getenv('MN_REDIS_URL'),
             "port" => 6379
@@ -44,14 +41,14 @@ class UserSessionsLambda
     public function getUserIdFromSession()
     {
         if (empty($this->cookies)) {
-            $this->logger->info("Cookie array is empty");
+            $this->logger->error("Cookie array is empty");
             throw new Exception('Cookie array is empty');
         }
 
         $user = $this->getUserSession($this->cookies);
 
         if (!$user) {
-            $this->logger->info("No user could be obtained from the session");
+            $this->logger->error("No user could be obtained from the session");
             throw new Exception('No user could be obtained from the session');
         }
 
@@ -66,14 +63,14 @@ class UserSessionsLambda
     public function getUserSession()
     {
         if (empty($this->cookies)) {
-            $this->logger->info("Cookie array is empty");
+            $this->logger->error("Cookie array is empty");
             throw new Exception('Cookie array is empty');
         }
 
         $user = $this->redis->get($this->cookies[$this->cookie_name]);
 
         if (!$user) {
-            $this->logger->info("No user could be obtained from the session");
+            $this->logger->error("No user could be obtained from the session");
             throw new Exception('No user could be obtained from the session');
         }
 
@@ -96,8 +93,9 @@ class UserSessionsLambda
             'httponly' => true
         ];
 
-
         $this->redis->set($this->cookies[$this->cookie_name], $user_id, $expiry);
+
+        return $this->cookies;
     }
 
     /**
@@ -108,12 +106,13 @@ class UserSessionsLambda
     public function deleteUserSession()
     {
         if (empty($this->cookies)) {
-            $this->logger->info("Cookie array is empty");
+            $this->logger->error("Cookie array is empty");
             throw new Exception('Cookies array is empty');
         }
 
         $this->redis->del($this->cookies[$this->cookie_name]);
 
+        return $this->cookies;
     }
 
 }
