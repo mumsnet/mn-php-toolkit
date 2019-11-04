@@ -73,7 +73,8 @@ class UserSessionsLaravel
             'httponly' => true
         ];
 
-        //TODO investigate if i need to add to the reponse for laravel
+        //tell laravel to add the cookie to the user's browser - Queue adds the cookie to the next response
+        \Cookie::queue($this->cookie_name, $this->cookie_value_prefix . uniqid(), $expiry);
 
         Redis::set($this->cookies[$this->cookie_name], $user_id, $expiry);
     }
@@ -89,7 +90,9 @@ class UserSessionsLaravel
             throw new Exception('Cookies array is empty');
         }
 
-        //TODO tell laravel to delete from user's browser
+        //tell laravel to delete from user's browser - Queue adds the cookie to the next response
+        \Cookie::queue(\Cookie::forget($this->cookie_name));
+
         Redis::del($this->cookies[$this->cookie_name]);
 
     }

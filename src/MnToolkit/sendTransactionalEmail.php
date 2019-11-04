@@ -88,8 +88,7 @@ class SendTransactionalEmail
 
         } else {
 
-                $this->logger->info("Payload for SQS: ". json_encode($message_body));
-
+            $this->logger->info("Payload for SQS: " . json_encode($message_body));
 
         }
 
