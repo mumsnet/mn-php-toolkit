@@ -9,7 +9,6 @@ use Exception;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
 // TODO Add the predis package instead
-//TODO add the logger here
 
 class UserSessionsLambda
 {
@@ -45,12 +44,14 @@ class UserSessionsLambda
     public function getUserIdFromSession()
     {
         if (empty($this->cookies)) {
+            $this->logger->info("Cookie array is empty");
             throw new Exception('Cookie array is empty');
         }
 
         $user = $this->getUserSession($this->cookies);
 
         if (!$user) {
+            $this->logger->info("No user could be obtained from the session");
             throw new Exception('No user could be obtained from the session');
         }
 
@@ -65,12 +66,14 @@ class UserSessionsLambda
     public function getUserSession()
     {
         if (empty($this->cookies)) {
+            $this->logger->info("Cookie array is empty");
             throw new Exception('Cookie array is empty');
         }
 
         $user = $this->redis->get($this->cookies[$this->cookie_name]);
 
         if (!$user) {
+            $this->logger->info("No user could be obtained from the session");
             throw new Exception('No user could be obtained from the session');
         }
 
@@ -105,6 +108,7 @@ class UserSessionsLambda
     public function deleteUserSession()
     {
         if (empty($this->cookies)) {
+            $this->logger->info("Cookie array is empty");
             throw new Exception('Cookies array is empty');
         }
 

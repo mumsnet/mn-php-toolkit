@@ -29,7 +29,6 @@ class SetOriginRequestId
      */
     public function setOriginRequestId($request, Closure $next)
     {
-        //TODO inlcude the request Id in every log line similar to sourceiplogger
         if (getenv('HTTP_X_REQUEST_ID')) {
             $request_id = getenv('HTTP_X_REQUEST_ID');
             $this->logger->info("Found HTTP_X_REQUEST_ID: $request_id");

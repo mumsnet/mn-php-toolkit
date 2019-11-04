@@ -74,30 +74,19 @@ class SendTransactionalEmail
             'request_id' => $request_id
         ];
 
-        if (getenv('SQS_MAIL2_QUEUE_URL')) {
+        if (!getenv('SQS_MAIL2_QUEUE_URL')) {
+            $this->logger->info("SQS Mail Queue Url not present: " . json_encode($message_body));
             throw new Exception('SQS Mail Queue Url not present');
         }
 
-        //Put it on the SQS Queue
-        if (getenv('SQS_MAIL2_QUEUE_URL')) {
+        $client = new SqsClient();
 
-            $client = new SqsClient([
-                'region' => getenv('AWS_DEFAULT_REGION', 'us-east-1'),
-                'version' => '2012-11-05'
-            ]);
+        $params = [
+            'MessageBody' => json_encode($message_body),
+            'QueueUrl' => getenv('SQS_MAIL2_QUEUE_URL')
+        ];
 
-            $params = [
-                'MessageBody' => json_encode($message_body),
-                'QueueUrl' => getenv('SQS_MAIL2_QUEUE_URL')
-            ];
-
-            $client->sendMessage($params);
-
-        } else {
-
-            $this->logger->info("Payload for SQS: " . json_encode($message_body));
-
-        }
+        $client->sendMessage($params);
 
     }
 
