@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MnToolkit;
 
 use Illuminate\Support\Facades\Redis;
+use Exception;
 
 class UserSessionsLaravel
 {
@@ -19,13 +20,18 @@ class UserSessionsLaravel
     /**
      * Get User Session from Redis
      *
-     * @param  request  $request
-     *
+     * @throws Exception
      */
     public function getUserIdFromSession()
     {
-        if (!empty($this->cookies)) {
-            $user = $this->getUserSession($this->cookies);
+        if (empty($this->cookies)) {
+            throw new Exception('Cookie array is empty');
+        }
+
+        $user = $this->getUserSession();
+
+        if (!$user) {
+            throw new Exception('No user could be obtained from the session');
         }
 
         return $user->user_id;
@@ -34,14 +40,18 @@ class UserSessionsLaravel
     /**
      * Get User Session from Redis
      *
-     * @param  request  $request
-     *
+     * @throws Exception
      */
     public function getUserSession()
     {
-        if (!empty($this->cookies)) {
 
-            $user = Redis::get($this->cookies[$this->cookie_name]);
+        if (empty($this->cookies)) {
+            throw new Exception('Cookie array is empty');
+        }
+        $user = Redis::get($this->cookies[$this->cookie_name]);
+
+        if (!$user) {
+            throw new Exception('No user could be obtained from the session');
         }
 
         return json_decode($user);
@@ -50,7 +60,6 @@ class UserSessionsLaravel
     /**
      * Set User Session in Redis
      *
-     * @param  request  $request
      *
      */
     public function setUserSession($user_id, $persistent, $other_attributes = [])
@@ -58,12 +67,13 @@ class UserSessionsLaravel
         $expiry = $persistent ? strtotime("+1 year") : strtotime("+1 day");
 
         $this->cookies[$this->cookie_name] = [
-            'values' => $this->cookie_value_prefix.uniqid(),
+            'values' => $this->cookie_value_prefix . uniqid(),
             'expires' => $expiry,
             'secure' => true,
             'httponly' => true
         ];
 
+        //TODO investigate if i need to add to the reponse for laravel
 
         Redis::set($this->cookies[$this->cookie_name], $user_id, $expiry);
     }
@@ -71,14 +81,17 @@ class UserSessionsLaravel
     /**
      * Delete User Session from Redis
      *
-     * @param  request  $request
-     *
+     * @throws Exception
      */
     public function deleteUserSession()
     {
-        if ($this->cookies) {
-            Redis::del($this->cookies[$this->cookie_name]);
+        if (empty($this->cookies)) {
+            throw new Exception('Cookies array is empty');
         }
+
+        //TODO tell laravel to delete from user's browser
+        Redis::del($this->cookies[$this->cookie_name]);
+
     }
 
 }

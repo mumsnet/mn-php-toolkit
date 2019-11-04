@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace MnToolkit;
 
 use Closure;
-use Psr\Log\LoggerInterface;
 
 class SetOriginRequestId
 {
@@ -19,16 +18,16 @@ class SetOriginRequestId
     /**
      * Get Origin request Id and log it - set it as request Id for every request
      *
-     * @param $request
      *
      */
     public function setOriginRequestId($request, Closure $next)
     {
-        if (env('HTTP_X_REQUEST_ID')) {
-            $request_id = env('HTTP_X_REQUEST_ID');
+        //TODO inlcude the request Id in every log line similar to sourceiplogger
+        if (getenv('HTTP_X_REQUEST_ID')) {
+            $request_id = getenv('HTTP_X_REQUEST_ID');
             $this->logger->info("Found HTTP_X_REQUEST_ID: $request_id");
-        } elseif (env('HTTP_X_AMZN_TRACE_ID')) {
-            preg_match('/^.*Root=([^;]*).*$/', env('HTTP_X_AMZN_TRACE_ID'), $matches);
+        } elseif (getenv('HTTP_X_AMZN_TRACE_ID')) {
+            preg_match('/^.*Root=([^;]*).*$/', getenv('HTTP_X_AMZN_TRACE_ID'), $matches);
             $request_id = $matches[0];
             $this->logger->info("Found HTTP_X_AMZN_TRACE_ID: $request_id");
         }

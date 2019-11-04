@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MnToolkit;
 
 use Aws\Sqs\SqsClient;
+use Exception;
 
 class SendTransactionalEmail
 {
@@ -25,6 +26,7 @@ class SendTransactionalEmail
      * @param $template_fields
      * @param $cc_addresses
      * @param $request_id
+     * @throws Exception
      */
     public function sendTransactionalEmail(
         $message_type,
@@ -65,17 +67,21 @@ class SendTransactionalEmail
             'request_id' => $request_id
         ];
 
+        if (getenv('SQS_MAIL2_QUEUE_URL')) {
+            throw new Exception('SQS Mail Queue Url not present');
+        }
+
         //Put it on the SQS Queue
-        if (env('SQS_MAIL2_QUEUE_URL')) {
+        if (getenv('SQS_MAIL2_QUEUE_URL')) {
 
             $client = new SqsClient([
-                'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
+                'region' => getenv('AWS_DEFAULT_REGION', 'us-east-1'),
                 'version' => '2012-11-05'
             ]);
 
             $params = [
                 'MessageBody' => json_encode($message_body),
-                'QueueUrl' => env('SQS_MAIL2_QUEUE_URL')
+                'QueueUrl' => getenv('SQS_MAIL2_QUEUE_URL')
             ];
 
             $client->sendMessage($params);
@@ -83,6 +89,7 @@ class SendTransactionalEmail
         } else {
 
                 $this->logger->info("Payload for SQS: ". json_encode($message_body));
+
 
         }
 
