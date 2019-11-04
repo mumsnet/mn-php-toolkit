@@ -6,13 +6,20 @@ namespace MnToolkit;
 
 use Aws\Sqs\SqsClient;
 use Exception;
+use Monolog\Handler\ErrorLogHandler;
+use Monolog\Logger;
 
 class SendTransactionalEmail
 {
     private $logger;
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger = null)
     {
+        if (is_null($logger)) {
+            $logger = new Logger(get_class($this));
+            $logger->pushHandler(new ErrorLogHandler());
+        }
+
         $this->logger = $logger;
     }
 

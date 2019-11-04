@@ -5,16 +5,25 @@ declare(strict_types=1);
 namespace MnToolkit;
 
 use Illuminate\Support\Facades\Redis;
+use Monolog\Handler\ErrorLogHandler;
+use Monolog\Logger;
 use Exception;
+use Cookie;
 
 class UserSessionsLaravel
 {
-    public function __construct($cookies)
+    public function __construct($cookies, LoggerInterface $logger = null)
     {
+        if (is_null($logger)) {
+            $logger = new Logger(get_class($this));
+            $logger->pushHandler(new ErrorLogHandler());
+        }
+
         $this->cookie_name = 'mnsso';
         $this->cookie_value_prefix = 'mnsso_';
         $this->cookies = $cookies;
 
+        $this->logger = $logger;
     }
 
     /**
@@ -74,7 +83,7 @@ class UserSessionsLaravel
         ];
 
         //tell laravel to add the cookie to the user's browser - Queue adds the cookie to the next response
-        \Cookie::queue($this->cookie_name, $this->cookie_value_prefix . uniqid(), $expiry);
+        Cookie::queue($this->cookie_name, $this->cookie_value_prefix . uniqid(), $expiry);
 
         Redis::set($this->cookies[$this->cookie_name], $user_id, $expiry);
     }
@@ -91,7 +100,7 @@ class UserSessionsLaravel
         }
 
         //tell laravel to delete from user's browser - Queue adds the cookie to the next response
-        \Cookie::queue(\Cookie::forget($this->cookie_name));
+        Cookie::queue(\Cookie::forget($this->cookie_name));
 
         Redis::del($this->cookies[$this->cookie_name]);
 

@@ -5,13 +5,20 @@ declare(strict_types=1);
 namespace MnToolkit;
 
 use Closure;
+use Monolog\Handler\ErrorLogHandler;
+use Monolog\Logger;
 
 class SetOriginRequestId
 {
     private $logger;
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger = null)
     {
+        if (is_null($logger)) {
+            $logger = new Logger(get_class($this));
+            $logger->pushHandler(new ErrorLogHandler());
+        }
+
         $this->logger = $logger;
     }
 

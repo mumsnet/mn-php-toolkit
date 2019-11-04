@@ -6,14 +6,21 @@ namespace MnToolkit;
 
 require "predis/autoload.php";
 use Exception;
+use Monolog\Handler\ErrorLogHandler;
+use Monolog\Logger;
 // TODO Add the predis package instead
 //TODO add the logger here
 
 class UserSessionsLambda
 {
     
-    public function __construct($cookies , LoggerInterface $logger)
+    public function __construct($cookies , LoggerInterface $logger = null)
     {
+        if (is_null($logger)) {
+            $logger = new Logger(get_class($this));
+            $logger->pushHandler(new ErrorLogHandler());
+        }
+
       $this->cookie_name = 'mnsso';
       $this->cookie_value_prefix = 'mnsso_';
       $this->cookies = $cookies;
