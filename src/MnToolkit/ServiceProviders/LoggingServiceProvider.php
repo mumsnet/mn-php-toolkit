@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Providers;
+namespace MnToolkit\ServiceProviders;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
