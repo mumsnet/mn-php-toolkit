@@ -26,7 +26,7 @@ class LoggingServiceProvider extends ServiceProvider
     public function boot()
     {
         //Getting Request ID
-        if ($_SERVER['HTTP_X_REQUEST_ID']) {
+        if (isset($_SERVER['HTTP_X_REQUEST_ID'])) {
             $request_id = $_SERVER['HTTP_X_REQUEST_ID'];
         } elseif ($_SERVER['HTTP_X_AMZN_TRACE_ID']) {
             preg_match('/^.*Root=([^;]*).*$/', $_SERVER['HTTP_X_AMZN_TRACE_ID'], $matches);
@@ -35,7 +35,7 @@ class LoggingServiceProvider extends ServiceProvider
         $request_id = $request_id ?? uniqid();
 
         //Getting Request IP
-        if ($_SERVER['HTTP_X_FORWARDED_FOR']) {
+        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
             $stringsArray = explode(",", "HTTP_X_FORWARDED_FOR");
             $request_ip = $stringsArray[0] ?? '';
         }
