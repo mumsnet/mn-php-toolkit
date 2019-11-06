@@ -40,7 +40,7 @@ class LoggingServiceProvider extends ServiceProvider
             $request_ip = $stringsArray[0] ?? '';
         }
 
-        $monolog = Log::getMonolog();
+        $monolog = Log::getLogger();
 
         //Adding both to monolog
         $monolog->pushProcessor(function ($record, $request_id,$request_ip) {
