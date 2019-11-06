@@ -92,6 +92,7 @@ class UserSessionsLaravel
         Redis::set($this->cookies[$this->cookie_name], $user_id, $expiry);
     }
 
+
     /**
      * Delete User Session from Redis
      *
