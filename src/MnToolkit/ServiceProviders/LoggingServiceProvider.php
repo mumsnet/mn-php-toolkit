@@ -28,7 +28,7 @@ class LoggingServiceProvider extends ServiceProvider
         //Getting Request ID
         if (isset($_SERVER['HTTP_X_REQUEST_ID'])) {
             $request_id = $_SERVER['HTTP_X_REQUEST_ID'];
-        } elseif ($_SERVER['HTTP_X_AMZN_TRACE_ID']) {
+        } elseif (isset($_SERVER['HTTP_X_AMZN_TRACE_ID'])) {
             preg_match('/^.*Root=([^;]*).*$/', $_SERVER['HTTP_X_AMZN_TRACE_ID'], $matches);
             $request_id = $matches[0];
         }
