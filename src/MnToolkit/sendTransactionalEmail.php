@@ -79,7 +79,10 @@ class SendTransactionalEmail
             throw new Exception('SQS Mail Queue Url not present');
         }
 
-        $client = new SqsClient();
+        $client = new SqsClient([
+            'region' => getenv('AWS_DEFAULT_REGION', 'us-east-1'),
+            'version' => '2012-11-05'
+        ]);
 
         $params = [
             'MessageBody' => json_encode($message_body),
