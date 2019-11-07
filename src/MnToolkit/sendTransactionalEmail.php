@@ -81,7 +81,7 @@ class SendTransactionalEmail
         }
 
         $client = new SqsClient([
-            'region' => getenv('AWS_DEFAULT_REGION', 'us-east-1'),
+            'region' => getenv('AWS_DEFAULT_REGION'),
             'version' => '2012-11-05'
         ]);
 
