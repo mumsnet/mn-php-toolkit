@@ -8,6 +8,7 @@ use Aws\Sqs\SqsClient;
 use Exception;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 
 class SendTransactionalEmail
 {

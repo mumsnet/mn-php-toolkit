@@ -8,6 +8,7 @@ use Exception;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
 use Predis\Predis;
+use Psr\Log\LoggerInterface;
 
 class UserSessionsLambda
 {

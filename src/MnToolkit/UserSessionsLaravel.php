@@ -9,6 +9,7 @@ use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
 use Exception;
 use Cookie;
+use Psr\Log\LoggerInterface;
 
 class UserSessionsLaravel
 {

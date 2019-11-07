@@ -7,6 +7,7 @@ namespace MnToolkit;
 use Closure;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 
 class SetOriginRequestId
 {
