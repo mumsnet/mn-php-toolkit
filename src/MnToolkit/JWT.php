@@ -1,35 +1,28 @@
 <?php
-
+declare(strict_types=1);
 
 namespace MnToolkit;
 
 use Lindelius\JWT\StandardJWT;
-use Monolog\Handler\ErrorLogHandler;
-use Monolog\Logger;
-use Psr\Log\LoggerInterface;
 
 define("TOKEN_EXPIRY", (60 * 60)); // 1 hour
 
 class JWT
 {
+    private static $instance = null;
+
     private $jwtClientId = false;
     private $jwtSecretsJson = false;
-    private $logger;
 
     /**
-     * JWT constructor.  Pass it your Psr compliant logger object if available.
-     * Otherwise it will log to stdout.
-     *
-     * @param  LoggerInterface|null  $logger
+     * JWT singleton accessor.  Returns the single instance of JWT
      */
-    public function __construct(LoggerInterface $logger = null)
+    public static function getInstance(): JWT
     {
-        if (is_null($logger)) {
-            $logger = new Logger(get_class($this));
-            $logger->pushHandler(new ErrorLogHandler());
+        if (self::$instance == null) {
+            self::$instance = new JWT();
         }
-        $this->logger = $logger;
-        $this->checkEnvironmentVariables();
+        return self::$instance;
     }
 
     /**
@@ -39,7 +32,7 @@ class JWT
      * @param  array  $extraPayload
      * @return string the encoded JWT token
      */
-    public function tokenify($extraPayload = [])
+    public function tokenify(array $extraPayload = []): string
     {
         $jwt = new StandardJWT();
         $jwt->exp = time() + TOKEN_EXPIRY;
@@ -56,7 +49,7 @@ class JWT
      * @param  string  $encodedToken
      * @return bool
      */
-    public function isValidToken(string $encodedToken)
+    public function isValidToken(string $encodedToken): bool
     {
         return $this->decodeToken($encodedToken) !== false;
     }
@@ -73,9 +66,17 @@ class JWT
         try {
             return $this->_decodeToken($encodedToken);
         } catch (Exception $e) {
-            $this->logger->error($e);
+            GlobalLogger::getInstance()->getLogger()->error($e);
             return false;
         }
+    }
+
+    /**
+     * Private constructor - only called by getInstance
+     */
+    private function __construct()
+    {
+        $this->grabEnvironmentVariables();
     }
 
     private function _decodeToken(string $encodedToken)
@@ -86,7 +87,7 @@ class JWT
         return $decodedJwt;
     }
 
-    private function checkEnvironmentVariables()
+    private function grabEnvironmentVariables()
     {
         $this->jwtClientId = getenv('JWT_CLIENT_ID');
         if ($this->jwtClientId === false) {
@@ -101,6 +102,9 @@ class JWT
     private function getSecret($clientId)
     {
         $jwtSecrets = json_decode($this->jwtSecretsJson);
+        if (is_null($jwtSecrets)) {
+            throw new Exception("JWT_SECRETS is invalid or empty");
+        }
         foreach ($jwtSecrets as $jwtSecret) {
             if ($jwtSecret->client_id == $clientId) {
                 return $jwtSecret->secret;

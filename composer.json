@@ -20,6 +20,7 @@
         "php": "~7.1",
         "guzzlehttp/guzzle": "6.4.1",
         "lindelius/php-jwt": "0.8.1",
+        "monolog/monolog": "2.0.0",
         "phpfastcache/phpfastcache": "7.1.0",
         "psr/log": "1.1.1"
     },
