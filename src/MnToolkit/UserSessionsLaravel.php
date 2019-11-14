@@ -9,12 +9,13 @@ use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
 use Exception;
 use Cookie;
-use Psr\Log\LoggerInterface;
 
 class UserSessionsLaravel
 {
-    public function __construct($cookies, LoggerInterface $logger = null)
+    public function __construct($cookies = [])
     {
+        $logger = GlobalLogger::getInstance()->getLogger();
+
         if (is_null($logger)) {
             $logger = new Logger(get_class($this));
             $logger->pushHandler(new ErrorLogHandler());
@@ -92,7 +93,7 @@ class UserSessionsLaravel
 
         Redis::set($this->cookies[$this->cookie_name], $user_id, $expiry);
     }
-    
+
     /**
      * Delete User Session from Redis
      *

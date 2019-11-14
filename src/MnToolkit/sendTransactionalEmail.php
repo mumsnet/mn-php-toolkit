@@ -14,8 +14,10 @@ class SendTransactionalEmail
 {
     private $logger;
 
-    public function __construct(LoggerInterface $logger = null)
+    public function __construct()
     {
+        $logger = GlobalLogger::getInstance()->getLogger();
+
         if (is_null($logger)) {
             $logger = new Logger(get_class($this));
             $logger->pushHandler(new ErrorLogHandler());

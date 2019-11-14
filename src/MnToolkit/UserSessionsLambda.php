@@ -12,21 +12,23 @@ use Psr\Log\LoggerInterface;
 
 class UserSessionsLambda
 {
-    
-    public function __construct($cookies , LoggerInterface $logger = null)
+
+    public function __construct($cookies = [])
     {
+        $logger = GlobalLogger::getInstance()->getLogger();
+
         if (is_null($logger)) {
             $logger = new Logger(get_class($this));
             $logger->pushHandler(new ErrorLogHandler());
         }
 
-      $this->cookie_name = 'mnsso';
-      $this->cookie_value_prefix = 'mnsso_';
-      $this->cookies = $cookies;
+        $this->cookie_name = 'mnsso';
+        $this->cookie_value_prefix = 'mnsso_';
+        $this->cookies = $cookies;
 
-      $this->logger = $logger;
+        $this->logger = $logger;
 
-      $this->redis = new Predis\Client(array(
+        $this->redis = new Predis\Client(array(
             "scheme" => "tcp",
             "host" => getenv('MN_REDIS_URL'),
             "port" => 6379
@@ -88,7 +90,7 @@ class UserSessionsLambda
         $expiry = $persistent ? strtotime("+1 year") : strtotime("+1 day");
 
         $this->cookies[$this->cookie_name] = [
-            'values' => $this->cookie_value_prefix. uniqid(),
+            'values' => $this->cookie_value_prefix . uniqid(),
             'expires' => $expiry,
             'secure' => true,
             'httponly' => true
