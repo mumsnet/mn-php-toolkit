@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace MnToolkit;
 
+use Aws\CloudWatch;
 use Exception;
 use Gelf\Message;
 use Gelf\Publisher;
@@ -20,6 +21,8 @@ class SiteAction extends MnToolkitBase
     private $srvCode;
     private $transport;
     private $publisher;
+    private $awsRegion;
+    private $cloudwatchClient;
 
     /**
      * SiteAction singleton accessor.  Returns the single instance of SiteAction
@@ -33,9 +36,17 @@ class SiteAction extends MnToolkitBase
         return self::$instance;
     }
 
-    public function log(string $message, string $siteActionGroup, string $siteAction, array $extraPayload = [])
-    {
+    public function log(
+        string $who,
+        string $message,
+        string $siteActionGroup = 'test',
+        string $siteAction = 'unknown',
+        array $extraPayload = []
+    ) {
         // thoroughly check parameters
+        if (empty($who)) {
+            throw new Exception('who cannot be empty');
+        }
         if (empty($message)) {
             throw new Exception('message cannot be empty');
         }
@@ -72,6 +83,13 @@ class SiteAction extends MnToolkitBase
         $fullPayload['site_hostname'] = $this->siteHostname;
         $fullPayload['site_action_group'] = $siteActionGroup;
         $fullPayload['site_action'] = $siteAction;
+        if (is_numeric($who)) {
+            $fullPayload['user_id'] = $who;
+        } elseif (strpos($who, '@') !== false) {
+            $fullPayload['email'] = $who;
+        } else {
+            $fullPayload['username'] = $who;
+        }
         if ($this->envVarsProvided) {
             $gelfMessage = new Message();
             $gelfMessage->setShortMessage($message);
@@ -81,7 +99,38 @@ class SiteAction extends MnToolkitBase
             }
             $this->publisher->publish($gelfMessage);
         } else {
-            GlobalLogger::getInstance()->getLogger()->debug("This would have been sent to Graylog: {$message}, {$fullPayload}");
+            $dump = print_r($fullPayload, true);
+            GlobalLogger::getInstance()->getLogger()->debug("This would have been sent to Graylog: {$message}, {$dump}");
+        }
+
+        // send to cloudwatch
+        $rootNamespace = ($this->envVarsProvided) ? $this->cloudwatchRootNamespace : 'mn';
+        $siteHostname = ($this->envVarsProvided) ? $this->siteHostname : 'localhost';
+        $cloudwatchData = array(
+            'Namespace' => "{$rootNamespace}/{$siteActionGroup}",
+            'MetricData' => array(
+                array(
+                    'MetricName' => $siteAction,
+                    'Dimensions' => array(
+                        array(
+                            'Name' => 'site_hostname',
+                            'Value' => $siteHostname
+                        )
+                    ),
+                    'Value' => 1,
+                    'Unit' => 'Count'
+                )
+            )
+        );
+        if ($this->envVarsProvided) {
+            try {
+                $this->cloudwatchClient->putMetricData($cloudwatchData);
+            } catch (Exception $e) {
+                GlobalLogger::getInstance()->getLogger()->error($e->getMessage());
+            }
+        } else {
+            $dump = print_r($cloudwatchData, true);
+            GlobalLogger::getInstance()->getLogger()->debug("This would have been sent to Cloudwatch: {$dump}");
         }
     }
 
@@ -113,9 +162,23 @@ class SiteAction extends MnToolkitBase
             if (($this->srvCode = getenv('SRV_CODE')) === false) {
                 throw new Exception('Environment variable SRV_CODE is required');
             }
+            if (($this->awsRegion = getenv('SRV_AWS_REGION')) === false) {
+                throw new Exception('Environment variable SRV_AWS_REGION is required');
+            }
+
+            // set up gelf publisher
             $this->transport = new UdpTransport($this->gelfUdpHost, $this->gelfUdpPort);
             $this->publisher = new Publisher();
             $this->publisher->addTransport($this->transport);
+
+            // set up aws sdk
+            $this->cloudwatchClient = new CloudWatch\CloudWatchClient([
+                'region' => $this->awsRegion,
+                'version' => '2010-08-01'
+            ]);
+
+            // record the fact that all env vars have been provided
+            // which means we should be able to send to graylog and cloudwatch for real
             $this->envVarsProvided = true;
         }
     }
