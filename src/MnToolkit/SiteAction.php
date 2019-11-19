@@ -70,10 +70,12 @@ class SiteAction extends MnToolkitBase
         $fullPayload = $extraPayload;
         $fullPayload['srv_code'] = $this->srvCode;
         $fullPayload['site_hostname'] = $this->siteHostname;
+        $fullPayload['site_action_group'] = $siteActionGroup;
         $fullPayload['site_action'] = $siteAction;
         if ($this->envVarsProvided) {
             $gelfMessage = new Message();
             $gelfMessage->setShortMessage($message);
+            $gelfMessage->setFacility('gelf-php');
             foreach ($fullPayload as $key => $value) {
                 $gelfMessage->setAdditional($key, $value);
             }
@@ -91,7 +93,8 @@ class SiteAction extends MnToolkitBase
         $this->grabEnvironmentVariables();
     }
 
-    private function grabEnvironmentVariables() {
+    private function grabEnvironmentVariables()
+    {
         if (getenv('CLOUDWATCH_ROOT_NAMESPACE') ||
             getenv('GRAYLOG_GELF_UDP_HOST') ||
             getenv('GRAYLOG_GELF_UDP_PORT')) {
