@@ -20,11 +20,11 @@
         "php": "~7.1",
         "aws/aws-sdk-php": "^3.118",
         "graylog2/gelf-php": "^1.6",
-        "guzzlehttp/guzzle": "6.4.1",
-        "lindelius/php-jwt": "0.8.1",
+        "guzzlehttp/guzzle": "^6.4",
+        "lindelius/php-jwt": "^0.8",
         "monolog/monolog": "^1.24",
-        "phpfastcache/phpfastcache": "7.1.0",
-        "psr/log": "1.1.1"
+        "phpfastcache/phpfastcache": "^7.1",
+        "psr/log": "^1.1"
     },
     "require-dev": {
         "phpunit/phpunit" : ">=7.0",
