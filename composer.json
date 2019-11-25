@@ -20,7 +20,7 @@
         "php": "~7.1",
         "aws/aws-sdk-php": "^3.118",
         "graylog2/gelf-php": "^1.6",
-        "guzzlehttp/guzzle": "^6.4",
+        "guzzlehttp/guzzle": "^6.3",
         "lindelius/php-jwt": "^0.8",
         "monolog/monolog": "^1.24",
         "phpfastcache/phpfastcache": "^7.1"
