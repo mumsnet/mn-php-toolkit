@@ -5,6 +5,9 @@ namespace MnToolkit\ServiceProviders;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
+use MnToolkit\GlobalLogger;
+use Monolog\Handler\ErrorLogHandler;
+use Monolog\Logger;
 
 class LoggingServiceProvider extends ServiceProvider
 {
@@ -36,14 +39,18 @@ class LoggingServiceProvider extends ServiceProvider
 
         //Getting Request IP
         if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $stringsArray = explode(",", "HTTP_X_FORWARDED_FOR");
+            $stringsArray = explode(",", $_SERVER['HTTP_X_FORWARDED_FOR']);
             $request_ip = $stringsArray[0] ?? '';
         }
 
-        $monolog = Log::getLogger();
+        $logger = GlobalLogger::getInstance()->getLogger();
 
-        //Adding both to monolog
-        $monolog->pushProcessor(function ($record, $request_id,$request_ip) {
+        if (is_null($logger)) {
+            $logger = new Logger(get_class($this));
+            $logger->pushHandler(new ErrorLogHandler());
+        }
+
+        $logger->pushProcessor(function ($record, $request_id,$request_ip) {
             $record['origin_request_ip'] = $request_ip ?? '';
             $record['origin_request_id'] = $request_id;
             return $record;
