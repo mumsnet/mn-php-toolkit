@@ -5,9 +5,9 @@ namespace MnToolkit;
 
 class GlobalsFrontend extends MnToolkitBase
 {
-    public function getFragments()
+    public function getFragments($globalsUrl)
     {
-        $json = $this->cachedHttpGet(getenv("SRV_GLOBALS_URL"), 60, [], false);
+        $json = $this->cachedHttpGet($globalsUrl, 60, [], false);
         if (is_null($json)) {
             return null;
         }
