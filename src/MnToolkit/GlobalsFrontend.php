@@ -7,7 +7,7 @@ class GlobalsFrontend extends MnToolkitBase
 {
     public function getFragments()
     {
-        $json = $this->cachedHttpGet(getenv("GLOBALS_URL"), 60, [], false);
+        $json = $this->cachedHttpGet(getenv("SRV_GLOBALS_URL"), 60, [], false);
         if (is_null($json)) {
             return null;
         }
