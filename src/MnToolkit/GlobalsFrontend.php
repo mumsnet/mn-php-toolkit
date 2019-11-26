@@ -9,11 +9,14 @@ class GlobalsFrontend extends MnToolkitBase
     {
         if (getenv("SRV_GLOBALS_URL")) {
             $json = $this->cachedHttpGet(getenv("SRV_GLOBALS_URL"), $cacheSeconds, [], false);
+        } else {
+            $json = null;
         }
 
         if (is_null($json)) {
             return null;
         }
+
         return json_decode($json);
     }
 }
