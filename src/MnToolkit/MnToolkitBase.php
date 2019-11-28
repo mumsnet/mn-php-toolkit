@@ -17,18 +17,20 @@ class MnToolkitBase
         string $url,
         int $secondsToExpiry,
         array $headers = [],
-        bool $includeJwt = true
+        bool $includeJwt = true,
+        int $timeout = 2
     ): ?string {
         try {
             if ($includeJwt) {
                 $headers['Authorization'] = "Bearer {$this->getJwtToken()}";
             }
             $key = md5($url);
-            return FileCache::getInstance()->fetch($key, $secondsToExpiry, function () use ($url, $headers) {
+            return FileCache::getInstance()->fetch($key, $secondsToExpiry, function () use ($url, $headers, $timeout) {
                 $client = new Client();
                 $response = $client->get($url, [
                     'http_errors' => false,
-                    'headers' => $headers
+                    'headers' => $headers,
+                    'timeout' => $timeout
                 ]);
                 if ($response->getStatusCode() == 200) {
                     return $response->getBody()->getContents();
