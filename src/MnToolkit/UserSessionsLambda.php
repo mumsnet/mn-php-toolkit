@@ -28,11 +28,20 @@ class UserSessionsLambda
 
         $this->logger = $logger;
 
-        $this->redis = new Predis\Client(array(
-            "scheme" => "tcp",
-            "host" => getenv('MN_REDIS_URL'),
-            "port" => 6379
-        ));
+        if(getenv('MN_REDIS_SSL')){
+            $this->redis = new Predis\Client(array(
+                "scheme" => "tls",
+                "host" => getenv('MN_REDIS_URL'),
+                "port" => 6379
+            ));
+        }else{
+            $this->redis = new Predis\Client(array(
+                "scheme" => "tcp",
+                "host" => getenv('MN_REDIS_URL'),
+                "port" => 6379
+            ));
+        }
+
 
     }
 
