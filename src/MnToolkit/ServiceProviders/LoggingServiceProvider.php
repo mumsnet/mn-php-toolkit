@@ -38,6 +38,7 @@ class LoggingServiceProvider extends ServiceProvider
         $request_id = $request_id ?? uniqid();
 
         //Getting Request IP
+        $request_ip='';
         if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
             $stringsArray = explode(",", $_SERVER['HTTP_X_FORWARDED_FOR']);
             $request_ip = $stringsArray[0] ?? '';
@@ -50,8 +51,8 @@ class LoggingServiceProvider extends ServiceProvider
             $logger->pushHandler(new ErrorLogHandler());
         }
 
-        $logger->pushProcessor(function ($record, $request_id,$request_ip) {
-            $record['origin_request_ip'] = $request_ip ?? '';
+        $logger->pushProcessor(function ($record) use ($request_id, $request_ip) {
+            $record['origin_request_ip'] = $request_ip;
             $record['origin_request_id'] = $request_id;
             return $record;
         });
