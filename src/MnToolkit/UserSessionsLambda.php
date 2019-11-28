@@ -28,6 +28,7 @@ class UserSessionsLambda
 
         $this->logger = $logger;
 
+
         if(getenv('MN_REDIS_SSL') == 'True' || getenv('MN_REDIS_SSL') == 'true'){
             $this->redis = new Predis\Client(array(
                 "scheme" => "tls",
