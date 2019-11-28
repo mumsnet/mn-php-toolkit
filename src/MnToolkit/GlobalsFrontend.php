@@ -14,9 +14,24 @@ class GlobalsFrontend extends MnToolkitBase
         }
 
         if (is_null($json)) {
-            return null;
+            return $this->globalsHtmlFallback();
         }
 
         return json_decode($json);
+    }
+
+    private function globalsHtmlFallback()
+    {
+        $cdnUrl = getenv('CDN_URL');
+        $appUrl = getenv('APP_URL');
+
+        $fallback = new \stdClass();
+        $fallback->headScripts = '<link rel="stylesheet" href="' . $cdnUrl  . 'global-assets/css/global.min.css">';
+        $fallback->bodyScripts = '';
+        $fallback->headerLoggedIn = '<header class="bg-light p-3"><a href="' . $appUrl . '">Mumsnet</a></header>';
+        $fallback->headerLoggedOut = '<header class="bg-light p-3"><a href="' . $appUrl . '">Mumsnet</a></header>';
+        $fallback->footer = '<footer class="bg-light p-3"><small>&#169; ' . date('Y') . ' Mumsnet Ltd.</small></footer>';
+
+        return $fallback;
     }
 }
