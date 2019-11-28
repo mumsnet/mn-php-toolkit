@@ -7,7 +7,7 @@ namespace MnToolkit;
 use Exception;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
-use Predis\Predis;
+use Predis;
 use Psr\Log\LoggerInterface;
 
 class UserSessionsLambda
@@ -28,17 +28,21 @@ class UserSessionsLambda
 
         $this->logger = $logger;
 
-        if(getenv('MN_REDIS_SSL')){
+        if(getenv('MN_REDIS_SSL') == 'True' || getenv('MN_REDIS_SSL') == 'true'){
             $this->redis = new Predis\Client(array(
                 "scheme" => "tls",
-                "host" => getenv('MN_REDIS_URL'),
-                "port" => 6379
+                "host" => getenv('MN_REDIS_HOST'),
+                "port" => getenv('MN_REDIS_PORT'),
+                "password" => getenv('MN_REDIS_PASSWORD'),
+                "database" => getenv('MN_REDIS_DATABASE')
             ));
         }else{
             $this->redis = new Predis\Client(array(
                 "scheme" => "tcp",
-                "host" => getenv('MN_REDIS_URL'),
-                "port" => 6379
+                "host" => getenv('MN_REDIS_HOST'),
+                "port" => getenv('MN_REDIS_PORT'),
+                "password" => getenv('MN_REDIS_PASSWORD'),
+                "database" => getenv('MN_REDIS_DATABASE')
             ));
         }
 
@@ -105,7 +109,7 @@ class UserSessionsLambda
             'httponly' => true
         ];
 
-        $this->redis->set($this->cookies[$this->cookie_name], $user_id, $expiry);
+        $this->redis->set($this->cookies[$this->cookie_name], $user_id,'px', $expiry);
 
         return $this->cookies;
     }
