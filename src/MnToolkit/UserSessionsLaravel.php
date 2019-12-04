@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Redis as RedisClient;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
 use Exception;
-use Cookie;
+use Illuminate\Support\Facades\Cookie;
 class UserSessionsLaravel
 {
     public function __construct($cookies = [])
@@ -76,7 +76,7 @@ class UserSessionsLaravel
             RedisClient::set($this->cookies[$this->cookie_name], $user_id, "px", $expiry);
             return true;
         } catch (Exception $e) {
-            GlobalLogger::getInstance()->getLogger()->error("Failed to set cookie and redis session");
+            GlobalLogger::getInstance()->getLogger()->error("Failed to set cookie and redis session: ". $e->getMessage());
             return false;
         }
 
