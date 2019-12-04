@@ -71,8 +71,15 @@ class UserSessionsLaravel
             'httponly' => true
         ]);
         //tell laravel to add the cookie to the user's browser - Queue adds the cookie to the next response
-        Cookie::queue($this->cookie_name, $this->cookie_value_prefix . uniqid(), $expiry);
-        RedisClient::set($this->cookies[$this->cookie_name], $user_id, "px", $expiry);
+        try {
+            Cookie::queue($this->cookie_name, $this->cookie_value_prefix . uniqid(), $expiry);
+            RedisClient::set($this->cookies[$this->cookie_name], $user_id, "px", $expiry);
+            return true;
+        } catch (Exception $e) {
+            GlobalLogger::getInstance()->getLogger()->error("Failed to set cookie and redis session");
+            return false;
+        }
+
     }
     /**
      * Delete User Session from Redis
