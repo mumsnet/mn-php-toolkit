@@ -11,6 +11,7 @@ class UserSessionLaravelTest extends TestCase
 {
     /**
      * Testing get , set user session and delete
+     * @test
      */
     public function testUserSession()
     {
@@ -29,6 +30,7 @@ class UserSessionLaravelTest extends TestCase
 
     /**
      * Testing get user id , set user session and delete
+     * @test
      */
     public function testUserIdSession()
     {

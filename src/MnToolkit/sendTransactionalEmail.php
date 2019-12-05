@@ -92,8 +92,9 @@ class SendTransactionalEmail
             'QueueUrl' => getenv('SQS_MAIL2_QUEUE_URL')
         ];
 
-        $client->sendMessage($params);
+        $sent = $client->sendMessage($params);
 
+        return $sent;
     }
 
 }
