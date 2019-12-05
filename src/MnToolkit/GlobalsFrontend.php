@@ -8,16 +8,16 @@ class GlobalsFrontend extends MnToolkitBase
     public function getFragments($cacheSeconds = 60)
     {
         if (getenv("SRV_GLOBALS_URL")) {
-            $json = json_decode($this->cachedHttpGet(getenv("SRV_GLOBALS_URL"), $cacheSeconds, [], false));
+            $json = $this->cachedHttpGet(getenv("SRV_GLOBALS_URL"), $cacheSeconds, [], false);
         } else {
             $json = null;
         }
 
-        if (json_last_error() !== JSON_ERROR_NONE || is_null($json)) {
+        if (is_null($json)) {
             return $this->globalsHtmlFallback();
         }
 
-        return $json;
+        return json_decode($json);
     }
 
     private function globalsHtmlFallback()
