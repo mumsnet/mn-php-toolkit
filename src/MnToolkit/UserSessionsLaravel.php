@@ -61,7 +61,7 @@ class UserSessionsLaravel
      *
      *
      */
-    public function setUserSession($user_id, $persistent, $other_attributes = [])
+    public function setUserSession($user, $persistent, $other_attributes = [])
     {
         $expiry = $persistent ? strtotime("+1 year") : strtotime("+1 day");
         $this->cookies[$this->cookie_name] = json_encode([
@@ -73,8 +73,8 @@ class UserSessionsLaravel
         //tell laravel to add the cookie to the user's browser - Queue adds the cookie to the next response
         try {
             Cookie::queue($this->cookie_name, $this->cookie_value_prefix . uniqid(), $expiry);
-            RedisClient::set($this->cookies[$this->cookie_name], $user_id, "px", $expiry);
-            return true;
+            RedisClient::set($this->cookies[$this->cookie_name], json_encode($user), "px", $expiry);
+            return $this->cookies[$this->cookie_name];
         } catch (Exception $e) {
             GlobalLogger::getInstance()->getLogger()->error("Failed to set cookie and redis session: ". $e->getMessage());
             return false;
