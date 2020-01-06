@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace MnToolkit;
 
 use Lindelius\JWT\StandardJWT;
+use Exception;
 
 define("TOKEN_EXPIRY", (60 * 60)); // 1 hour
 
