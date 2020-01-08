@@ -78,7 +78,7 @@ class SendTransactionalEmail
             'request_id' => $request_id
         ];
 
-        if (!getenv('SQS_MAIL_QUEUE_URL')) {
+        if (!getenv('SQS_MAIL2_QUEUE_URL')) {
             $this->logger->error("SQS Mail Queue Url not present: " . json_encode($message_body));
             throw new Exception('SQS Mail Queue Url not present');
         }
@@ -90,7 +90,7 @@ class SendTransactionalEmail
 
         $params = [
             'MessageBody' => json_encode($message_body),
-            'QueueUrl' => getenv('SQS_MAIL_QUEUE_URL')
+            'QueueUrl' => getenv('SQS_MAIL2_QUEUE_URL')
         ];
 
         $sent = $client->sendMessage($params);
