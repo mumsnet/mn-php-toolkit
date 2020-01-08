@@ -44,9 +44,9 @@ class SendTransactionalEmail
         $to_address,
         $subject,
         $fallback_text,
+        $request_id,
         $template_fields = [],
-        $cc_addresses = '',
-        $request_id
+        $cc_addresses = ''
     ) {
         //validations
         if (empty($message_type)) {
