@@ -49,13 +49,14 @@ class UserSessionsLaravel
             $this->logger->error("Cookie Array Was Empty");
             throw new Exception('Cookie array is empty');
         }
-        $user = RedisClient::get(Cookie::get($this->cookie_name));
+        $user = RedisClient::get($this->cookies[$this->cookie_name]);
         if (!$user) {
             $this->logger->error("No user could be obtained from the session");
             throw new Exception('No user could be obtained from the session');
         }
         return json_decode($user);
     }
+
     /**
      * Set User Session in Redis
      *
@@ -65,23 +66,17 @@ class UserSessionsLaravel
     {
         $uniqueId = uniqid();
         $expiry = $persistent ? strtotime("+1 year") : strtotime("+1 day");
-        $this->cookies[$this->cookie_name] = json_encode([
-            'values' => $this->cookie_value_prefix .$uniqueId,
-            'expires' => $expiry,
-            'secure' => true,
-            'httponly' => true
-        ]);
         //tell laravel to add the cookie to the user's browser - Queue adds the cookie to the next response
         try {
-            Cookie::queue($this->cookie_name, $this->cookies[$this->cookie_name], $expiry);
-            RedisClient::set($this->cookies[$this->cookie_name], json_encode($user), "px", $expiry);
+            Cookie::queue($this->cookie_name, $this->cookie_value_prefix .$uniqueId, $expiry);
+            RedisClient::set($this->cookie_value_prefix .$uniqueId, json_encode($user), "px", $expiry);
             return $this->cookies[$this->cookie_name];
         } catch (Exception $e) {
             GlobalLogger::getInstance()->getLogger()->error("Failed to set cookie and redis session: ". $e->getMessage());
             return false;
         }
-
     }
+
     /**
      * Delete User Session from Redis
      *
