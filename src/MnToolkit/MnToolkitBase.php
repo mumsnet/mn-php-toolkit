@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace MnToolkit;
 
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use MnToolkit\WiredHttpClient;
 
 class MnToolkitBase
 {
@@ -26,7 +26,7 @@ class MnToolkitBase
             }
             $key = md5($url);
             return FileCache::getInstance()->fetch($key, $secondsToExpiry, function () use ($url, $headers, $timeout) {
-                $client = new Client();
+                $client = WiredHttpClient::getInstance()->newClient(['timeout' => 2]);
                 $response = $client->get($url, [
                     'http_errors' => false,
                     'headers' => $headers,
