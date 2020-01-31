@@ -4,8 +4,63 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bcea3c9bda92e7dd458c5c57199331b4",
+    "content-hash": "86059b5a7a4c7d91a32f8b8e2bb0623f",
     "packages": [
+        {
+            "name": "ackintosh/ganesha",
+            "version": "0.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ackintosh/ganesha.git",
+                "reference": "acd644b65ea58c81a25c0279ee9c5a95f1f5d2ca"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ackintosh/ganesha/zipball/acd644b65ea58c81a25c0279ee9c5a95f1f5d2ca",
+                "reference": "acd644b65ea58c81a25c0279ee9c5a95f1f5d2ca",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6.0",
+                "psr/http-message": "~1.0"
+            },
+            "require-dev": {
+                "guzzlehttp/guzzle": "~6.3",
+                "php-coveralls/php-coveralls": "~2.0",
+                "php-vcr/php-vcr": "~1.0",
+                "php-vcr/phpunit-testlistener-vcr": "~2.0",
+                "phpunit/phpunit": "^5.7.27",
+                "predis/predis": "^1.1"
+            },
+            "suggest": {
+                "guzzlehttp/guzzle": "Allows the usage of the Guzzle Middleware"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Ackintosh\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "akihito.nakano",
+                    "email": "sora.akatsuki@gmail.com"
+                }
+            ],
+            "description": "PHP implementation of Circuit Breaker pattern",
+            "keywords": [
+                "circuit breaker",
+                "error handling",
+                "fault tolerance",
+                "guzzle middleware",
+                "microservices"
+            ],
+            "time": "2019-09-28T12:00:22+00:00"
+        },
         {
             "name": "aws/aws-sdk-php",
             "version": "3.121.1",
