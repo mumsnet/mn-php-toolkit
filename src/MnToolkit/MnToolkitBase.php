@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace MnToolkit;
 
 use GuzzleHttp\Exception\RequestException;
-use MnToolkit\WiredHttpClient;
 
 class MnToolkitBase
 {
