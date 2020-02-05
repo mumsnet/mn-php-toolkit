@@ -59,9 +59,6 @@ class FileCache
      */
     private function __construct()
     {
-        CacheManager::setDefaultConfig(new ConfigurationOption([
-            'path' => '/tmp',
-        ]));
-        $this->cache = new Psr16Adapter('Files');
+        $this->cache = MnToolkitBase::checkCache();
     }
 }

@@ -4,9 +4,27 @@ declare(strict_types=1);
 namespace MnToolkit;
 
 use GuzzleHttp\Exception\RequestException;
+use Phpfastcache\CacheManager;
+use Phpfastcache\Config\ConfigurationOption;
+use Phpfastcache\Helper\Psr16Adapter;
 
 class MnToolkitBase
 {
+    static $cache = null;
+    public static function checkCache()
+    {
+        if(isset(self::$cache))
+        {
+            return self::$cache;
+        };
+        CacheManager::setDefaultConfig(new ConfigurationOption([
+            'path' => '/tmp',
+        ]));
+        $cache = new Psr16Adapter('Files');
+        self::$cache = $cache;
+        return $cache;
+    }
+
     protected function getJwtToken($extraPayload = []): string
     {
         return JWT::getInstance()->tokenify($extraPayload);
