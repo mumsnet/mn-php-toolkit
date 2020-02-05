@@ -26,6 +26,7 @@ class JWT
         return self::$instance;
     }
 
+
     /**
      * Create a JWT encoded token for this client.  Optionally pass it an extra payload
      * array which will be added as claims in the JWT token.
