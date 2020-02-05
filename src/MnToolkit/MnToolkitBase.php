@@ -11,6 +11,7 @@ use Phpfastcache\Helper\Psr16Adapter;
 class MnToolkitBase
 {
     static $cache = null;
+
     public static function checkCache()
     {
         if(isset(self::$cache))
