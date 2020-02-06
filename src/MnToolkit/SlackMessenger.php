@@ -12,7 +12,7 @@ class SlackMessenger
      *
      *
      */
-    public function sendMessage($channel, $message)
+    public static function sendMessage($channel, $message)
     {
         if(env('SLACK_WEBHOOK_URLS')){
 
