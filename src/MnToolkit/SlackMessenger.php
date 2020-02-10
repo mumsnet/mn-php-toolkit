@@ -18,7 +18,7 @@ class SlackMessenger
 
            $hook_array = json_decode(env('SLACK_WEBHOOK_URLS'));
 
-           $hook = $hook_array[0]->{$channel};
+           $hook = $hook_array->{$channel};
 
             $ch = curl_init($hook);
 
