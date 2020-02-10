@@ -18,9 +18,11 @@ class MnToolkitBase
         {
             return self::$cache;
         };
+
         CacheManager::setDefaultConfig(new ConfigurationOption([
             'path' => '/tmp',
         ]));
+
         $cache = new Psr16Adapter('Files');
         self::$cache = $cache;
         return $cache;
