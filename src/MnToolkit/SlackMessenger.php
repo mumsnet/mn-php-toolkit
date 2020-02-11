@@ -14,7 +14,7 @@ class SlackMessenger
      */
     public static function sendMessage($channel, $message)
     {
-        if(env('SLACK_WEBHOOK_URLS')){
+        if(env('SLACK_WEBHOOK_URL')){
 
            $hook_array = json_decode(env('SLACK_WEBHOOK_URLS'));
 
