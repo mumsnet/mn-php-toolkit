@@ -18,6 +18,7 @@ class SlackMessenger
 
             $envVariable = str_replace("'", "\"", env('SLACK_WEBHOOK_URL'));
 
+
             $hook_array = json_decode($envVariable);
 
             $hook = $hook_array->{$channel};
