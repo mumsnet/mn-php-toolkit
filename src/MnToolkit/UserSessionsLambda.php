@@ -62,7 +62,7 @@ class UserSessionsLambda
             throw new Exception('Cookie array is empty');
         }
 
-        $user = $this->getUserSession($this->cookies);
+        $user = $this->getUserSession();
 
         if (!$user) {
             $this->logger->error("No user could be obtained from the session");
