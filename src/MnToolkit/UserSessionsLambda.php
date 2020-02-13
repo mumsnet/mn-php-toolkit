@@ -101,18 +101,17 @@ class UserSessionsLambda
      */
     public function setUserSession($user_id, $persistent, $other_attributes = [])
     {
+        $uniqueId = uniqid();
         $expiry = $persistent ? strtotime("+1 year") : strtotime("+1 day");
 
-        $this->cookies[$this->cookie_name] = [
-            'values' => $this->cookie_value_prefix . uniqid(),
-            'expires' => $expiry,
-            'secure' => true,
-            'httponly' => true
-        ];
-
-        $this->redis->set($this->cookies[$this->cookie_name], $user_id,'px', $expiry);
-
-        return $this->cookies;
+        try {
+            setcookie("mnsso", $this->cookie_value_prefix . $uniqueId);
+            $this->redis->set($this->cookie_value_prefix . $uniqueId, json_encode($user_id), "px", $expiry);
+            return $this->cookies;
+        }catch (Exception $e) {
+            $this->logger->error($e->getMessage());
+            return false;
+        }
     }
 
     /**
