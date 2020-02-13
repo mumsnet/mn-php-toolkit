@@ -49,6 +49,9 @@ class UserSessionsLaravel
             $this->logger->error("Cookie Array Was Empty");
             throw new Exception('Cookie array is empty');
         }
+        if(!isset($this->cookies[$this->cookie_name])){
+            return false;
+        }
         $user = RedisClient::get($this->cookies[$this->cookie_name]);
         if (!$user) {
             $this->logger->error("No user could be obtained from the session");
