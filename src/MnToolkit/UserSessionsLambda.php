@@ -32,6 +32,7 @@ class UserSessionsLambda
         if(getenv('MN_REDIS_SSL') == 'True' || getenv('MN_REDIS_SSL') == 'true'){
             $this->redis = new Predis\Client(array(
                 "scheme" => "tls",
+                "url" => getenv('MN_REDIS_URL'),
                 "host" => getenv('MN_REDIS_HOST'),
                 "port" => getenv('MN_REDIS_PORT'),
                 "password" => getenv('MN_REDIS_PASSWORD'),
@@ -40,6 +41,7 @@ class UserSessionsLambda
         }else{
             $this->redis = new Predis\Client(array(
                 "scheme" => "tcp",
+                "url" => getenv('MN_REDIS_URL'),
                 "host" => getenv('MN_REDIS_HOST'),
                 "port" => getenv('MN_REDIS_PORT'),
                 "password" => getenv('MN_REDIS_PASSWORD'),
