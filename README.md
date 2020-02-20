@@ -1,6 +1,10 @@
 # mn-toolkit
 This repo houses the source for our composer package `mn-toolkit`.  This package contains the following features:
-* Feature toggles - Used to toggle features on and off
+* Feature toggles - Used to toggle features on and off<br>
+You can use the function 'isOn' to check the state of a feature toggle
+You can use the function 'getToggles' to check the available toggles
+The are also functions for checking white listed and black listed uris.<br>
+Those functions just require the toggle and the request uri
     
 * Local file cache - return the cached value associated with $key if available,
   or load it using $loadFunction and add it to the cache.
@@ -41,7 +45,7 @@ To use this function you need to pass it an instance of your logger so that the 
               `$template_fields = [],`<br>
               `$cc_addresses = ''` <br>   
 
-* Source IP detection - Might not need this one
+* Source IP detection - Might not need this one<br>
 
 * SiteAction (Graylog) - Logger for behavior logging<br>
 This logger is used less for errors and more for user behavior logging like: user tried to update his details without being logged in.<br>
@@ -50,9 +54,11 @@ In these logs you can pass quite a lot of info, like so:<br>
 `$this->siteaction->log($user_id, 'Failed to created pregnancy record', 'profile', 'profile_update', ['errors' => json_encode($e->getMessage())]);
 `
 
-* Correlation ID (set origin request id) - Might not need this one
+* Correlation ID (set origin request id) <br>
+Sets the origin request id header if it doesnt exist for correlation and for tracking the request
 
 * User sessions (SSO) for lambda - sets user session for log in through lambda
+Its used the same way as the user sessions for laravel below:
 
 * User sessions (SSO) for laravel - sets user session for log in through laravel
 <br> You can set a session like so:<br> `$session = new UserSessionsLaravel();`<br>
