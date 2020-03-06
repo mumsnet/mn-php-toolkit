@@ -69,6 +69,23 @@ Its used the same way as the user sessions for laravel below:
 * Slack Messenger - Accepts a channel and a message and sends the message to the channel<br>
 This is quite simple to use. Just call the function and give it a channel name and a message. Make sure you have the channels credentials in your ENV.
 `SlackMessenger::sendMessage('channel','message')`
+
+* Feature Toggles - Can be used to check if a feature toggle is on for the specific url that is calling the service.
+  To use:
+  `FeatureToggle::getInstance()->isOn('ABC-01')`
+  This will return a bool of either `True` or `False`.
+  Use this in a conditional with a code block.
+  ```php
+    if (FeatureToggle::getInstance()->isOn('ABC-01')) {
+      //do stuff
+    };
+    
+  ```
+  If no whitelist urls are added to a toggle, then the toggle will be active on every page. If a whitelist url is given, then the toggle will only appear on that url (If a whitelist url includes a `*` e.g. `/talk/*` then the toggle will be on for all urls following the same pattern e.g `/talk/property`).
+  Feature toggles can be managed in the admin service.
+  >Prod: nova.mumsnet.com
+  >
+  >Staging: novastageaws1.devmn.net
 ## Install
 Via Composer
 ``` bash
