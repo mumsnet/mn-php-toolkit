@@ -1,11 +1,12 @@
 <?php
 declare(strict_types=1);
 namespace MnToolkit;
-use Illuminate\Support\Facades\Redis as RedisClient;
+use Predis;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
 use Exception;
 use Illuminate\Support\Facades\Cookie;
+
 class UserSessionsLaravel
 {
     public function __construct($cookies = [])
@@ -19,6 +20,22 @@ class UserSessionsLaravel
         $this->cookie_value_prefix = 'mnsso_';
         $this->cookies = $cookies;
         $this->logger = $logger;
+        if((getenv('MN_REDIS_SSL') == 'True' || getenv('MN_REDIS_SSL') == 'true') && (env('MN_REDIS_PASSWORD'))){
+            $this->redis = new Predis\Client(array(
+                "scheme" => "tls",
+                "host" => getenv('MN_REDIS_HOST'),
+                "port" => getenv('MN_REDIS_PORT'),
+                "password" => getenv('MN_REDIS_PASSWORD'),
+                "database" => getenv('MN_REDIS_DATABASE')
+            ));
+        }else{
+            $this->redis = new Predis\Client(array(
+                "scheme" => "tcp",
+                "host" => getenv('MN_REDIS_HOST'),
+                "port" => getenv('MN_REDIS_PORT'),
+                "database" => getenv('MN_REDIS_DATABASE')
+            ));
+        };
     }
     /**
      * Get User Session from Redis
@@ -49,14 +66,16 @@ class UserSessionsLaravel
             $this->logger->error("Cookie Array Was Empty");
             throw new Exception('Cookie array is empty');
         }
-        $user = RedisClient::get($this->cookies[$this->cookie_name]);
+        if(!isset($this->cookies[$this->cookie_name])){
+            return false;
+        }
+        $user = $this->redis->get($this->cookies[$this->cookie_name]);
         if (!$user) {
             $this->logger->error("No user could be obtained from the session");
             throw new Exception('No user could be obtained from the session');
         }
         return json_decode($user);
     }
-
     /**
      * Set User Session in Redis
      *
@@ -69,14 +88,13 @@ class UserSessionsLaravel
         //tell laravel to add the cookie to the user's browser - Queue adds the cookie to the next response
         try {
             Cookie::queue($this->cookie_name, $this->cookie_value_prefix .$uniqueId, $expiry);
-            RedisClient::set($this->cookie_value_prefix .$uniqueId, json_encode($user), "px", $expiry);
+            $this->redis->set($this->cookie_value_prefix .$uniqueId, json_encode($user), "px", $expiry);
             return $this->cookies[$this->cookie_name];
         } catch (Exception $e) {
             GlobalLogger::getInstance()->getLogger()->error("Failed to set cookie and redis session: ". $e->getMessage());
             return false;
         }
     }
-
     /**
      * Delete User Session from Redis
      *
@@ -90,6 +108,6 @@ class UserSessionsLaravel
         }
         //tell laravel to delete from user's browser - Queue adds the cookie to the next response
         Cookie::queue(Cookie::forget($this->cookie_name));
-        RedisClient::del($this->cookies[$this->cookie_name]);
+        $this->redis->del($this->cookies[$this->cookie_name]);
     }
 }

@@ -47,7 +47,7 @@ class SetOriginRequestId
 
         $response = $next($request);
 
-        $response->headers->set('X-Request-Id', $request_id, false);
+        $response->headers->set('HTTP_X_REQUEST_ID', $request_id, false);
 
         return $response;
     }
