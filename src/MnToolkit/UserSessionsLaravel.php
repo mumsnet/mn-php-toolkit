@@ -20,9 +20,17 @@ class UserSessionsLaravel
         $this->cookie_value_prefix = 'mnsso_';
         $this->cookies = $cookies;
         $this->logger = $logger;
-        if((getenv('MN_REDIS_SSL') == 'True' || getenv('MN_REDIS_SSL') == 'true') && (env('MN_REDIS_PASSWORD'))){
+        if((getenv('MN_REDIS_SSL') == 'True' || getenv('MN_REDIS_SSL') == 'true') && (getenv('MN_REDIS_PASSWORD'))) {
             $this->redis = new Predis\Client(array(
                 "scheme" => "tls",
+                "host" => getenv('MN_REDIS_HOST'),
+                "port" => getenv('MN_REDIS_PORT'),
+                "password" => getenv('MN_REDIS_PASSWORD'),
+                "database" => getenv('MN_REDIS_DATABASE')
+            ));
+        }elseif(getenv('MN_REDIS_PASSWORD')){
+            $this->redis = new Predis\Client(array(
+                "scheme" => "tcp",
                 "host" => getenv('MN_REDIS_HOST'),
                 "port" => getenv('MN_REDIS_PORT'),
                 "password" => getenv('MN_REDIS_PASSWORD'),
