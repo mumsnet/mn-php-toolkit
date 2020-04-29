@@ -3,24 +3,59 @@ declare(strict_types=1);
 
 namespace MnToolkit;
 
-class GlobalsFrontend extends MnToolkitBase
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Psr7;
+use Monolog\Handler\ErrorLogHandler;
+use Monolog\Logger;
+
+class GlobalsFrontend
 {
-    public function getFragments($cacheSeconds = 60)
+    private $logger;
+    private $client;
+
+    public function __construct($client)
     {
-        if (getenv("SRV_GLOBALS_URL")) {
-            $json = $this->cachedHttpGet(getenv("SRV_GLOBALS_URL"), $cacheSeconds, [], false);
-        } else {
-            $json = null;
+        $logger = GlobalLogger::getInstance()->getLogger();
+
+        if (is_null($logger)) {
+            $logger = new Logger(get_class($this));
+            $logger->pushHandler(new ErrorLogHandler());
         }
 
-        if (is_null($json)) {
-            return $this->globalsHtmlFallback();
-        }
+        $this->logger = $logger;
 
-        return json_decode($json);
+        $this->client = $client;
     }
 
-    private function globalsHtmlFallback()
+    public function getComponents($options, $cacheKey = 'components', $cacheSeconds = 900)
+    {
+        return FileCache::getInstance()->fetch($cacheKey, $cacheSeconds, function() use ($options) {
+            return $this->requestHtml($options);
+        });
+    }
+
+    private function requestHtml($options)
+    {
+        try {
+            if (getenv('SRV_GLOBALS_URL')) {
+                $response = $this->client->get(getenv('SRV_GLOBALS_URL'), ['timeout' => 3, 'query' => $options]);
+            } else {
+                return $this->fallbackHtml();
+            }
+
+            if ($response->getStatusCode() == 200) {
+                return json_decode($response->getBody()->getContents());
+            } else {
+                $this->logger->error('globals service request failed with code ' . $response->getStatusCode());
+                return $this->fallbackHtml();
+            }
+        } catch (RequestException $e) {
+            $this->logger->error('globals service request failed ' . Psr7\str($e->getRequest()));
+            return $this->fallbackHtml();
+        }
+    }
+
+    private function fallbackHtml()
     {
         $cdnUrl = getenv('CDN_URL');
 
