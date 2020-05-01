@@ -23,30 +23,21 @@ class GlobalsFrontend
         }
 
         $this->logger = $logger;
-
         $this->client = $client;
     }
 
-    public function getComponents($options, $cacheKey = 'components', $cacheSeconds = 900)
-    {
-        return FileCache::getInstance()->fetch($cacheKey, $cacheSeconds, function() use ($options) {
-            return $this->requestHtml($options);
-        });
-    }
-
-    private function requestHtml($options)
+    public function getComponents($options, $cacheKey, $cacheSeconds = 900)
     {
         try {
             if (getenv('SRV_GLOBALS_URL')) {
-                $response = $this->client->get(getenv('SRV_GLOBALS_URL'), ['timeout' => 3, 'query' => $options]);
+                return FileCache::getInstance()->fetch($cacheKey, $cacheSeconds, function() use ($options) {
+                    $response = $this->client->get(getenv('SRV_GLOBALS_URL'), ['timeout' => 3, 'query' => $options]);
+                    if ($response->getStatusCode() == 200) {
+                        return json_decode($response->getBody()->getContents());
+                    }
+                });
             } else {
-                return $this->fallbackHtml();
-            }
-
-            if ($response->getStatusCode() == 200) {
-                return json_decode($response->getBody()->getContents());
-            } else {
-                $this->logger->error('globals service request failed with code ' . $response->getStatusCode());
+                $this->logger->error('globals service request failed - SRV_GLOBALS_URL not set ' . Psr7\str($e->getRequest()));
                 return $this->fallbackHtml();
             }
         } catch (RequestException $e) {
