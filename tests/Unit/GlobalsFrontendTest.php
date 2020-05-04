@@ -29,7 +29,7 @@ class GlobalsFrontendTest extends TestCase
         $client = new Client(['handler' => $handler]);
 
         $globalsFrontend = new GlobalsFrontend($client);
-        $html = $globalsFrontend->getComponents(['headerLoggedIn' => true, 'headScripts' => true], 'globalsJsonTest', 0);
+        $html = $globalsFrontend->getComponents(['headerLoggedIn' => 'true', 'headScripts' => 'true'], 'globalsJsonTest', 0);
 
         $this->assertObjectHasAttribute('headScripts', $html);
         $this->assertObjectHasAttribute('headerLinks', $html);
@@ -45,7 +45,7 @@ class GlobalsFrontendTest extends TestCase
         $client = new Client(['handler' => $handler]);
 
         $globalsFrontend = new GlobalsFrontend($client);
-        $html = $globalsFrontend->getComponents(['doesNotExist' => true], 'fallbackHtmlTest', 0);
+        $html = $globalsFrontend->getComponents(['doesNotExist' => 'true'], 'fallbackHtmlTest', 0);
 
         $this->assertObjectHasAttribute('headScripts', $html);
         $this->assertObjectHasAttribute('bodyScripts', $html);
