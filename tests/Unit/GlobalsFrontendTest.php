@@ -9,16 +9,11 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Client;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 
 class GlobalsFrontendTest extends TestCase
 {
-    protected function setUp(): void
-    {
-        putenv('SRV_GLOBALS_URL=test');
-    }
-
     /** @test */
     public function can_get_component_html_from_globals_json()
     {
@@ -52,11 +47,5 @@ class GlobalsFrontendTest extends TestCase
         $this->assertObjectHasAttribute('headerLoggedIn', $html);
         $this->assertObjectHasAttribute('headerLoggedOut', $html);
         $this->assertObjectHasAttribute('footer', $html);
-    }
-
-
-    protected function tearDown(): void
-    {
-        putenv('SRV_GLOBALS_URL');
     }
 }
