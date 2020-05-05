@@ -37,7 +37,7 @@ class GlobalsFrontend
                     }
                 });
             } else {
-                $this->logger->error('globals service request failed - SRV_GLOBALS_URL not set ' . Psr7\str($e->getRequest()));
+                $this->logger->error('globals service request failed - SRV_GLOBALS_URL not set ');
                 return $this->fallbackHtml();
             }
         } catch (RequestException $e) {
