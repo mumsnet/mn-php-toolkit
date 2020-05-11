@@ -26,7 +26,7 @@ class GlobalsFrontend
         $this->client = $client;
     }
 
-    public function getComponents($options)
+    public function getComponents($options, $cache = FileCache::class)
     {
         $cachedGlobalsTimeout = 900; // Set timeout to 15 mins (900 seconds)
         $cachedFallbackTimeout = 60; // Set timeout to 1m (60 seconds)
@@ -34,19 +34,19 @@ class GlobalsFrontend
 
         try {
             if (getenv('SRV_GLOBALS_URL')) {
-                $cachedGlobals = FileCache::getInstance()->get($cacheKey);
+                $cachedGlobals = $cache::getInstance()->get($cacheKey);
                 if ($cachedGlobals) {
                     return json_decode($cachedGlobals);
                 }
                 $response = $this->client->get(getenv('SRV_GLOBALS_URL'), ['timeout' => 3, 'query' => $options]);
                 if ($response->getStatusCode() == 200) {
                     $globals = $response->getBody()->getContents();
-                    FileCache::getInstance()->set($cacheKey, $globals, $cachedGlobalsTimeout);
+                    $cache::getInstance()->set($cacheKey, $globals, $cachedGlobalsTimeout);
                     return json_decode($globals);
                 } else {
                     $this->logger->error('globals service request failed ' . $response->getStatusCode());
                     $fallback = $this->fallbackHtml();
-                    FileCache::getInstance()->set($cacheKey, json_encode($fallback), $cachedFallbackTimeout);
+                    $cache::getInstance()->set($cacheKey, json_encode($fallback), $cachedFallbackTimeout);
                     return $fallback;
                 }
             } else {

@@ -11,6 +11,23 @@ use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Client;
 use Tests\TestCase;
 
+class MockFileCache
+{
+    private static $instance = null;
+
+    public static function getInstance()
+    {
+        if (self::$instance == null) {
+            self::$instance = new MockFileCache();
+        }
+
+        return self::$instance;
+    }
+
+    public function get() { }
+
+    public function set() { }
+}
 
 class GlobalsFrontendTest extends TestCase
 {
@@ -24,7 +41,7 @@ class GlobalsFrontendTest extends TestCase
         $client = new Client(['handler' => $handler]);
 
         $globalsFrontend = new GlobalsFrontend($client);
-        $html = $globalsFrontend->getComponents(['headerLoggedIn' => 'true', 'headScripts' => 'true'], 'globalsJsonTest', 0);
+        $html = $globalsFrontend->getComponents(['headerLoggedIn' => 'true', 'headScripts' => 'true']);
 
         $this->assertObjectHasAttribute('headScripts', $html);
         $this->assertObjectHasAttribute('headerLinks', $html);
@@ -38,9 +55,10 @@ class GlobalsFrontendTest extends TestCase
         $mock = new MockHandler([new Response(404)]);
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
+        $cache = new MockFileCache();
 
         $globalsFrontend = new GlobalsFrontend($client);
-        $html = $globalsFrontend->getComponents(['doesNotExist' => 'true'], 'fallbackHtmlTest', 0);
+        $html = $globalsFrontend->getComponents(['doesNotExist' => 'true'], $cache);
 
         $this->assertObjectHasAttribute('headScripts', $html);
         $this->assertObjectHasAttribute('bodyScripts', $html);
