@@ -54,6 +54,40 @@ class FileCache
         return $value;
     }
 
+  /**
+     * Set a cached value associated with $key,
+     * @param  string  $key  the unique cache key for this object
+     * @param  string  $value  the value to set the key to
+     * @param  int  $secondsToExpiry  number of seconds after which this object will be removed from cache
+     * @return null
+     */
+    public function set(string $key, string $value, int $secondsToExpiry)
+    {
+        try {
+            $this->cache->set($key, $value, $secondsToExpiry);
+        } catch (PhpfastcacheSimpleCacheException $e) {
+            GlobalLogger::getInstance()->getLogger()->error(e);
+        }
+    }
+
+  /**
+     * Get the cached value associated with $key if available,
+     * @param  string  $key  the unique cache key for this object
+     * @return mixed|null
+     */
+    public function get(string $key)
+    {
+        $value = null;
+        try {
+            if ($this->cache->has($key)) {
+                $value = $this->cache->get($key);
+            }
+        } catch (PhpfastcacheSimpleCacheException $e) {
+            GlobalLogger::getInstance()->getLogger()->error(e);
+        }
+        return $value;
+    }
+
     /**
      * Private constructor.  Only called from getInstance.
      */
