@@ -26,19 +26,31 @@ class GlobalsFrontend
         $this->client = $client;
     }
 
-    public function getComponents($options, $cacheKey, $cacheSeconds = 900)
+    public function getComponents($options)
     {
+        $cachedGlobalsTimeout = 900; // Set timeout to 15 mins (900 seconds)
+        $cachedFallbackTimeout = 60; // Set timeout to 1m (60 seconds)
+        $cacheKey = 'globals';
+
         try {
             if (getenv('SRV_GLOBALS_URL')) {
-                return FileCache::getInstance()->fetch($cacheKey, $cacheSeconds, function() use ($options) {
-                    $response = $this->client->get(getenv('SRV_GLOBALS_URL'), ['timeout' => 3, 'query' => $options]);
-                    if ($response->getStatusCode() == 200) {
-                        return json_decode($response->getBody()->getContents());
-                    }
-                });
+                $cachedGlobals = FileCache::getInstance()->get($cacheKey);
+                if ($cachedGlobals) {
+                    return json_decode($cachedGlobals);
+                }
+                $response = $this->client->get(getenv('SRV_GLOBALS_URL'), ['timeout' => 3, 'query' => $options]);
+                if ($response->getStatusCode() == 200) {
+                    $globals = $response->getBody()->getContents();
+                    FileCache::getInstance()->set($cacheKey, $globals, $cachedGlobalsTimeout);
+                    return json_decode($globals);
+                } else {
+                    $this->logger->error('globals service request failed ' . $response->getStatusCode());
+                    $fallback = $this->fallbackHtml();
+                    FileCache::getInstance()->set($cacheKey, json_encode($fallback), $cachedFallbackTimeout);
+                    return $fallback;
+                }
             } else {
-                $this->logger->error('globals service request failed - SRV_GLOBALS_URL not set ');
-                return $this->fallbackHtml();
+                throw new \Exception('Environment variable SRV_GLOBALS_URL does not exist.');
             }
         } catch (RequestException $e) {
             $this->logger->error('globals service request failed ' . Psr7\str($e->getRequest()));
