@@ -3,24 +3,62 @@ declare(strict_types=1);
 
 namespace MnToolkit;
 
-class GlobalsFrontend extends MnToolkitBase
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Psr7;
+use Monolog\Handler\ErrorLogHandler;
+use Monolog\Logger;
+
+class GlobalsFrontend
 {
-    public function getFragments($cacheSeconds = 60)
+    private $logger;
+    private $client;
+
+    public function __construct($client)
     {
-        if (getenv("SRV_GLOBALS_URL")) {
-            $json = $this->cachedHttpGet(getenv("SRV_GLOBALS_URL"), $cacheSeconds, [], false);
-        } else {
-            $json = null;
+        $logger = GlobalLogger::getInstance()->getLogger();
+
+        if (is_null($logger)) {
+            $logger = new Logger(get_class($this));
+            $logger->pushHandler(new ErrorLogHandler());
         }
 
-        if (is_null($json)) {
-            return $this->globalsHtmlFallback();
-        }
-
-        return json_decode($json);
+        $this->logger = $logger;
+        $this->client = $client;
     }
 
-    private function globalsHtmlFallback()
+    public function getComponents($options, $cache = FileCache::class)
+    {
+        $cachedGlobalsTimeout = 900; // Set timeout to 15 mins (900 seconds)
+        $cachedFallbackTimeout = 60; // Set timeout to 1m (60 seconds)
+        $cacheKey = 'globals';
+
+        try {
+            if (getenv('SRV_GLOBALS_URL')) {
+                $cachedGlobals = $cache::getInstance()->get($cacheKey);
+                if ($cachedGlobals) {
+                    return json_decode($cachedGlobals);
+                }
+                $response = $this->client->get(getenv('SRV_GLOBALS_URL'), ['timeout' => 3, 'query' => $options]);
+                if ($response->getStatusCode() == 200) {
+                    $globals = $response->getBody()->getContents();
+                    $cache::getInstance()->set($cacheKey, $globals, $cachedGlobalsTimeout);
+                    return json_decode($globals);
+                } else {
+                    $this->logger->error('globals service request failed ' . $response->getStatusCode());
+                    $fallback = $this->fallbackHtml();
+                    $cache::getInstance()->set($cacheKey, json_encode($fallback), $cachedFallbackTimeout);
+                    return $fallback;
+                }
+            } else {
+                throw new \Exception('Environment variable SRV_GLOBALS_URL does not exist.');
+            }
+        } catch (RequestException $e) {
+            $this->logger->error('globals service request failed ' . Psr7\str($e->getRequest()));
+            return $this->fallbackHtml();
+        }
+    }
+
+    private function fallbackHtml()
     {
         $cdnUrl = getenv('CDN_URL');
 
