@@ -13,10 +13,10 @@ Those functions just require the toggle and the request uri
 More info at: https://github.com/ackintosh/ganesha
 
 * GlobalLogger - Logger class for this package <br>
-    Globbal logger is used to set an instance of a global logger and then retrieve it when needed so we can log errors to it. This sends the errors to your logs on your local and to papertrail on stage and production.
+    Global logger is used to set an instance of a global logger and then retrieve it when needed so we can log errors to it. This sends the errors to your logs on your local and to papertrail on stage and production.
     We mainly use it for system errors and you can use it like so: `log::error('Token does not exist');`
 
-* Globals frontend - Loads in global assets - [documentation](https://github.com/mumsnet/globals_service/blob/staging/README.md)
+* Globals frontend - Loads and caches global assets
 
 * JWT - Used to add and check JWT tokens for securing cross microservice requests
 <br> To set a JWT token, generate it on the JWT website using the ENV values. There is a JWT quide in the docs.
