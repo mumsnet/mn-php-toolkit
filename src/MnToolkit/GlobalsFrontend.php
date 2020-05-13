@@ -50,7 +50,8 @@ class GlobalsFrontend
                     return $fallback;
                 }
             } else {
-                throw new \Exception('Environment variable SRV_GLOBALS_URL does not exist.');
+                $this->logger->error('Environment variable SRV_GLOBALS_URL does not exist.');
+                return $this->fallbackHtml();
             }
         } catch (RequestException $e) {
             $this->logger->error('globals service request failed ' . Psr7\str($e->getRequest()));
