@@ -61,21 +61,21 @@ class GlobalsFrontend
 
     private function fallbackHtml()
     {
-        $cdnUrl = getenv('CDN_URL');
+        $siteUrl = getenv('SITE_URL');
 
         $fallback = new \stdClass();
         $fallback->headScripts = '
             <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
-            <script src="' . $cdnUrl . 'global-assets/js/global.min.js"></script>
+            <script src="' . $siteUrl . '/global-assets/js/global.min.js"></script>
             <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-            <link href="' . $cdnUrl . 'global-assets/css/global.min.css" rel="stylesheet">
+            <link href="' . $siteUrl . '/global-assets/css/global.min.css" rel="stylesheet">
         ';
         $fallback->bodyScripts = '';
         $fallbackHeader = '
             <header class="d-flex justify-content-between align-items-center service-fallback__header">
             <a href="/">
-                <img class="ml-2 my-1" src="' . $cdnUrl . 'global-assets/images/logos/mn-circle-logo.png" alt="Mumsnet" width="44">
+                <img class="ml-2 my-1" src="' . $siteUrl . '/global-assets/images/logos/mn-circle-logo.png" alt="Mumsnet" width="44">
             </a>
             <div>
                 <a class="service-fallback__nav-link text-white border-right border-white" href="/">Home</a>
