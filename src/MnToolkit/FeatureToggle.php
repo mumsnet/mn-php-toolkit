@@ -28,17 +28,49 @@ class FeatureToggle extends MnToolkitBase
      * @param  string  #requestUri  the part of this request's URL from the protocol name up to the query string eg: /some/path
      * @return bool true if named toggle is on, false if off
      */
-    public function isOn(string $toggleName, string $requestUri = null): bool
+    public function isOn(string $toggleName, $userId = null , string $requestUri = null): bool
     {
         $toggles = $this->getToggles();
+
         if (is_null($toggles)) {
             return false;
         }
+
         foreach ($toggles->data as $toggle) {
             if ($toggle->attributes->name == $toggleName) {
+
+                if($toggle->attributes->status =='off'){
+                    return false;
+                }
+
+                $cookie = $_COOKIE['mnft'];
+                if(!isset($cookie)){
+                    return false;
+                }
+
+                if($toggle->attributes->status == 'publicbeta'){
+                    if(isset($_COOKIE['mnbeta'])){
+                        return true;
+                    }
+                }
+
+                if($toggle->attributes->status == 'privatebeta'){
+                    $betaUsers = explode(',', $toggle->attributes->beta_users);
+                    foreach ($betaUsers as $betaUser){
+                        if(trim($betaUser)==$userId){
+                            return true;
+                        }
+                    }
+                }
+
+                $this->updateFeatureToggles($toggles->data);
+
+                $decodedCookie = base64_decode($cookie);
+                $clientPercentage = $this->calcClientPercentage($decodedCookie,$toggleName);
+                $togglePercentage = $toggle->attributes->percentage;
+
                 return
-                    $toggle->attributes->percentage == 100 &&
-                    !$this->uriIsBlacklisted($toggle, $requestUri) &&
+                    $clientPercentage <= $togglePercentage &&
                     $this->uriIsWhitelisted($toggle, $requestUri);
             }
         }
@@ -53,9 +85,34 @@ class FeatureToggle extends MnToolkitBase
         $this->grabEnvironmentVariables();
     }
 
-    private function uriIsBlacklisted($toggle, ?string $requestUri) : bool
-    {
-        return $this->uriIsListed($toggle->attributes->{'blacklist-urls'}, $requestUri, false);
+    private function updateFeatureToggles($toggles){
+        $cookie = $_COOKIE['mnft'];
+        $decodedCookie = base64_decode($cookie);
+        $newCookie = [];
+        foreach ($toggles as $toggle){
+            $clientPercentage = $this->calcClientPercentage($decodedCookie,$toggle->attributes->name);
+            array_push($newCookie,$decodedCookie,$toggle->attributes->name.':'.$clientPercentage);
+        }
+        $comma_separated = implode(",", $newCookie);
+        setcookie('mnft', $comma_separated,time()+86400*30*12,'/');
+    }
+
+    private function calcClientPercentage($decodedCookie,$toggleName){
+
+        $clientPercentage = rand(1,100);
+
+        if (strpos($decodedCookie, $toggleName) !== false) {
+            $oldToggles = explode(',', $decodedCookie);
+            foreach ($oldToggles as $oldToggle){
+                if (strpos($oldToggle, $toggleName) !== false) {
+                    $explodedToggle = explode(':', $oldToggle);
+                    $clientPercentage = $explodedToggle[1];
+                    return $clientPercentage;
+                }
+            }
+        }
+
+        return $clientPercentage;
     }
 
     private function uriIsWhitelisted($toggle, ?string $requestUri) : bool
