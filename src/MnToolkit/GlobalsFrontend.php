@@ -99,6 +99,7 @@ class GlobalsFrontend
             </div>
         ';
         $fallback->headerLoggedIn = $fallbackHeader;
+        $fallback->headerLoggedInAndPremium = $fallbackHeader;
         $fallback->headerLoggedOut = $fallbackHeader;
         $fallback->footer = '
             <footer class="service-fallback__footer p-2 mt-7">
