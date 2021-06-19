@@ -86,8 +86,8 @@ class UserSessionsLambda
         $user = $this->redis->get($this->cookies[$this->cookie_name]);
 
         if (!$user) {
-            $this->logger->error("No user could be obtained from the session: redis key=" . $this->cookies[$this->cookie_name]);
-            throw new Exception('No user could be obtained from the session: redis key=' . $this->cookies[$this->cookie_name]);
+            $this->logger->error("No user. Cookie name=" . $this->cookie_name . "Redis key=" . $this->cookies[$this->cookie_name]);
+            throw new Exception( "No user. Cookie name=" . $this->cookie_name . "Redis key=" . $this->cookies[$this->cookie_name]);
         }
 
         return json_decode($user);
