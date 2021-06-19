@@ -12,7 +12,6 @@ use Psr\Log\LoggerInterface;
 
 class UserSessionsLambda
 {
-
     public function __construct($cookies = [])
     {
         $logger = GlobalLogger::getInstance()->getLogger();
@@ -29,7 +28,7 @@ class UserSessionsLambda
         $this->logger = $logger;
 
 
-        if(getenv('MN_REDIS_SSL') == 'True' || getenv('MN_REDIS_SSL') == 'true'){
+        if (getenv('MN_REDIS_SSL') == 'True' || getenv('MN_REDIS_SSL') == 'true') {
             $this->redis = new Predis\Client(array(
                 "scheme" => "tls",
                 "url" => getenv('MN_REDIS_URL'),
@@ -38,7 +37,7 @@ class UserSessionsLambda
                 "password" => getenv('MN_REDIS_PASSWORD'),
                 "database" => getenv('MN_REDIS_DATABASE')
             ));
-        }else{
+        } else {
             $this->redis = new Predis\Client(array(
                 "scheme" => "tcp",
                 "url" => getenv('MN_REDIS_URL'),
@@ -48,8 +47,6 @@ class UserSessionsLambda
                 "database" => getenv('MN_REDIS_DATABASE')
             ));
         }
-
-
     }
 
     /**
@@ -89,8 +86,8 @@ class UserSessionsLambda
         $user = $this->redis->get($this->cookies[$this->cookie_name]);
 
         if (!$user) {
-            $this->logger->error("No user could be obtained from the session");
-            throw new Exception('No user could be obtained from the session');
+            $this->logger->error("No user. Cookie name=" . $this->cookie_name . "Redis key=" . $this->cookies[$this->cookie_name]);
+            throw new Exception( "No user. Cookie name=" . $this->cookie_name . "Redis key=" . $this->cookies[$this->cookie_name]);
         }
 
         return json_decode($user);
@@ -110,7 +107,7 @@ class UserSessionsLambda
             setcookie("mnsso", $this->cookie_value_prefix . $uniqueId);
             $this->redis->set($this->cookie_value_prefix . $uniqueId, json_encode($user_id), "px", $expiry);
             return $this->cookies;
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error($e->getMessage());
             return false;
         }
@@ -132,5 +129,4 @@ class UserSessionsLambda
 
         return $this->cookies;
     }
-
 }
